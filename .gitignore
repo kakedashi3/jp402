@@ -7,3 +7,6 @@ out/
 .DS_Store
 next-env.d.ts
 .vercel
+
+# ローカル表示用デモ
+public/sample-*.json
