@@ -1,0 +1,145 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "kakedashi newsletter",
+    "version": "1.0.0",
+    "description": "JPYC（Polygon）で記事ごとに購入できるニュースレター。x402scan discovery spec 準拠。",
+    "x-guidance": "記事一覧は GET /articles（無料）。本文は GET /articles/{id} で取得し、402 が返ったら JPYC（Polygon / eip155:137）で支払う。全記事は同一 payTo に着金する。",
+    "x-jp402": {
+      "currency": "JPYC",
+      "settlement": { "facilitator": "yen402", "eip": ["EIP-3009", "EIP-2612"] }
+    }
+  },
+  "servers": [{ "url": "https://newsletter.example.jp" }],
+  "components": {
+    "securitySchemes": {
+      "siwx": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Sign-In with X（ウォレット署名）。購読者限定の無料エンドポイント用。"
+      }
+    }
+  },
+  "paths": {
+    "/articles": {
+      "get": {
+        "operationId": "listArticles",
+        "summary": "記事一覧（無料）",
+        "tags": ["Articles"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "公開されている記事の一覧",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "articles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "title": { "type": "string" },
+                          "priceJpyc": { "type": "string" }
+                        },
+                        "required": ["id", "title", "priceJpyc"]
+                      }
+                    }
+                  },
+                  "required": ["articles"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/articles/{id}": {
+      "get": {
+        "operationId": "getArticle",
+        "summary": "記事本文（JPYC で購入）",
+        "tags": ["Articles"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "記事 ID（/articles で取得）"
+          }
+        ],
+        "x-payment-info": {
+          "price": { "mode": "fixed", "currency": "JPYC", "amount": "500" },
+          "protocols": [
+            {
+              "x402": {
+                "network": "eip155:137",
+                "asset": "0xe7c3d8c9a439fede00d2600032d5db0be71c3c29",
+                "payTo": "0x0000000000000000000000000000000000000000"
+              }
+            }
+          ]
+        },
+        "x-jp402": {
+          "invoice": {
+            "registrationNumber": "T1234567890123",
+            "qualifiedIssuer": true
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "記事本文",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "title": { "type": "string" },
+                    "body": { "type": "string" }
+                  },
+                  "required": ["id", "title", "body"]
+                }
+              }
+            }
+          },
+          "402": { "description": "Payment Required — JPYC（Polygon）で支払う" }
+        }
+      }
+    },
+    "/subscriber/feed": {
+      "get": {
+        "operationId": "subscriberFeed",
+        "summary": "購読者限定フィード（ウォレット署名・無料）",
+        "tags": ["Subscriber"],
+        "security": [{ "siwx": [] }],
+        "responses": {
+          "200": {
+            "description": "購読者向けの記事フィード",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "items": { "type": "array", "items": { "type": "object" } } },
+                  "required": ["items"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "summary": "ヘルスチェック（公開・無料）",
+        "tags": ["Meta"],
+        "security": [],
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}

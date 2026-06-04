@@ -40,9 +40,19 @@ export interface ResolvedService extends Service {
   id: string; // resource を base64url 化した安定キー
 }
 
+// registry エントリ。OpenAPI(x402scan spec) 正典に pivot。後方互換で catalog_url も受容。
+//  - openapi_url: OpenAPI ドキュメントの直 URL（最優先）
+//  - url: 発行者オリジン。/openapi.json を優先し、無ければ /.well-known/x402-catalog.json
+//  - catalog_url: 旧 Bazaar カタログ（後方互換）
+interface RegistryEntry {
+  openapi_url?: string;
+  url?: string;
+  catalog_url?: string;
+}
+
 interface RegistryFile {
   _meta?: { updated?: string };
-  entries?: { catalog_url: string }[];
+  entries?: RegistryEntry[];
 }
 
 const REVALIDATE = 300; // 5分
@@ -51,13 +61,59 @@ export function serviceId(resource: string): string {
   return Buffer.from(resource).toString('base64url');
 }
 
+async function fetchJson(url: string): Promise<unknown | null> {
+  try {
+    const r = await fetch(url, { next: { revalidate: REVALIDATE } });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
+function parseCatalog(cat: Catalog, sourceUrl: string): ResolvedService[] {
+  return (cat.services ?? []).map(s => ({
+    ...s,
+    publisher: cat.catalog?.publisher ?? '(no publisher)',
+    catalogUrl: sourceUrl,
+    id: serviceId(s.resource),
+  }));
+}
+
+// 多形式 reader（Postel の法則）: OpenAPI 優先 → Bazaar カタログ → 後方互換 catalog_url。
+// 宣言の正典は OpenAPI、最終真実は runtime 402（呼び出し側で確定）。
+async function resolveEntry(e: RegistryEntry): Promise<ResolvedService[]> {
+  const { parseOpenApi } = await import('./openapi');
+
+  if (e.openapi_url) {
+    const doc = await fetchJson(e.openapi_url);
+    if (doc) return parseOpenApi(doc, e.openapi_url);
+  }
+
+  if (e.url) {
+    const base = e.url.replace(/\/+$/, '');
+    const oapi = await fetchJson(`${base}/openapi.json`);
+    if (oapi) return parseOpenApi(oapi, `${base}/openapi.json`);
+    const cat = await fetchJson(`${base}/.well-known/x402-catalog.json`);
+    if (cat) return parseCatalog(cat as Catalog, `${base}/.well-known/x402-catalog.json`);
+    return [];
+  }
+
+  if (e.catalog_url) {
+    const cat = await fetchJson(e.catalog_url);
+    if (cat) return parseCatalog(cat as Catalog, e.catalog_url);
+  }
+
+  return [];
+}
+
 export async function fetchRegistry(): Promise<RegistryFile> {
   const r = await fetch(REGISTRY_URL, { next: { revalidate: REVALIDATE } });
   if (!r.ok) throw new Error(`registry fetch failed: ${r.status}`);
   return (await r.json()) as RegistryFile;
 }
 
-/** registry.json の entries を辿り、全 catalog の services を解決して返す。 */
+/** registry.json の entries を辿り、各発行者の宣言を解決して全 service を返す。 */
 export async function fetchServices(): Promise<ResolvedService[]> {
   let reg: RegistryFile;
   try {
@@ -65,24 +121,7 @@ export async function fetchServices(): Promise<ResolvedService[]> {
   } catch {
     return [];
   }
-  const entries = reg.entries ?? [];
-  const lists = await Promise.all(
-    entries.map(async (e): Promise<ResolvedService[]> => {
-      try {
-        const r = await fetch(e.catalog_url, { next: { revalidate: REVALIDATE } });
-        if (!r.ok) return [];
-        const cat = (await r.json()) as Catalog;
-        return (cat.services ?? []).map(s => ({
-          ...s,
-          publisher: cat.catalog?.publisher ?? '(no publisher)',
-          catalogUrl: e.catalog_url,
-          id: serviceId(s.resource),
-        }));
-      } catch {
-        return [];
-      }
-    })
-  );
+  const lists = await Promise.all((reg.entries ?? []).map(e => resolveEntry(e)));
   return lists.flat();
 }
 

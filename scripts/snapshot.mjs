@@ -30,27 +30,90 @@ async function rpc(method, params) {
   return j.result;
 }
 
-async function getServices() {
+// lib/registry.ts / lib/openapi.ts と同じ多形式 reader を CI 用にミラー。
+async function fetchJson(url) {
   try {
-    const reg = await (await fetch(REGISTRY_URL)).json();
-    const entries = reg.entries ?? [];
-    const lists = await Promise.all(
-      entries.map(async e => {
-        try {
-          const cat = await (await fetch(e.catalog_url)).json();
-          return (cat.services ?? []).map(s => ({
-            ...s,
-            publisher: cat.catalog?.publisher ?? '(no publisher)',
-          }));
-        } catch {
-          return [];
-        }
-      }),
-    );
-    return lists.flat();
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    return await r.json();
   } catch {
+    return null;
+  }
+}
+
+function jpycToRaw(amount) {
+  if (!amount) return undefined;
+  const [int, frac = ''] = String(amount).split('.');
+  const fracPad = (frac + '0'.repeat(18)).slice(0, 18);
+  try {
+    return (BigInt(int || '0') * 10n ** 18n + BigInt(fracPad || '0')).toString();
+  } catch {
+    return undefined;
+  }
+}
+
+function parseOpenApi(doc, sourceUrl) {
+  if (!doc || typeof doc !== 'object' || !doc.paths) return [];
+  const publisher = doc.info?.title ?? '(no publisher)';
+  const server = Array.isArray(doc.servers) ? doc.servers[0]?.url : undefined;
+  let base = '';
+  if (typeof server === 'string' && /^https?:\/\//i.test(server)) base = server.replace(/\/+$/, '');
+  else {
+    try {
+      base = new URL(sourceUrl).origin;
+    } catch {
+      base = '';
+    }
+  }
+  const out = [];
+  for (const [pathKey, ops] of Object.entries(doc.paths)) {
+    if (!ops || typeof ops !== 'object') continue;
+    for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+      const op = ops[method];
+      const xp = op?.['x-payment-info'];
+      if (!xp) continue;
+      const x402 = Array.isArray(xp.protocols) ? xp.protocols.map(p => p?.x402).find(Boolean) : undefined;
+      if ((x402?.network ?? '') !== NET || (x402?.asset ?? '').toLowerCase() !== JPYC) continue;
+      const raw = xp.price?.mode === 'fixed' ? jpycToRaw(xp.price?.amount) : jpycToRaw(xp.price?.max);
+      out.push({
+        publisher,
+        resource: `${base}${pathKey}`,
+        accepts: [{ scheme: 'exact', network: NET, asset: JPYC, payTo: x402?.payTo ?? '', maxAmountRequired: raw }],
+      });
+    }
+  }
+  return out;
+}
+
+function parseCatalog(cat) {
+  return (cat.services ?? []).map(s => ({ ...s, publisher: cat.catalog?.publisher ?? '(no publisher)' }));
+}
+
+async function resolveEntry(e) {
+  if (e.openapi_url) {
+    const doc = await fetchJson(e.openapi_url);
+    if (doc) return parseOpenApi(doc, e.openapi_url);
+  }
+  if (e.url) {
+    const base = e.url.replace(/\/+$/, '');
+    const oapi = await fetchJson(`${base}/openapi.json`);
+    if (oapi) return parseOpenApi(oapi, `${base}/openapi.json`);
+    const cat = await fetchJson(`${base}/.well-known/x402-catalog.json`);
+    if (cat) return parseCatalog(cat);
     return [];
   }
+  if (e.catalog_url) {
+    const cat = await fetchJson(e.catalog_url);
+    if (cat) return parseCatalog(cat);
+  }
+  return [];
+}
+
+async function getServices() {
+  const reg = await fetchJson(REGISTRY_URL);
+  if (!reg) return [];
+  const lists = await Promise.all((reg.entries ?? []).map(e => resolveEntry(e)));
+  return lists.flat();
 }
 
 async function signalsFor(payTo) {
