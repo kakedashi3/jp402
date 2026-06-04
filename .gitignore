@@ -6,7 +6,11 @@ out/
 *.log
 .DS_Store
 next-env.d.ts
+*.tsbuildinfo
 .vercel
+
+# pnpm が正（npm install の副産物は追わない）
+package-lock.json
 
 # ローカル表示用デモ
 public/sample-*.json

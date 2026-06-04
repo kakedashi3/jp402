@@ -30,10 +30,10 @@ export default async function ServiceDetail({
 
       <div className="list" style={{ marginTop: 24 }}>
         <div className="svc" style={{ display: 'block' }}>
-          <Row label="価格" value={formatJpyc(accept?.maxAmountRequired)} />
+          <Row label="価格" value={formatJpyc(accept?.maxAmountRequired)} mono />
           <Row label="チェーン" value="Polygon (eip155:137)" />
-          <Row label="トークン" value={`JPYC ${shortAddr(accept?.asset)}`} />
-          <Row label="受取先 (payTo)" value={shortAddr(accept?.payTo)} />
+          <Row label="トークン" value={`JPYC ${shortAddr(accept?.asset)}`} mono />
+          <Row label="受取先 (payTo)" value={shortAddr(accept?.payTo)} mono />
           <Row label="scheme" value={accept?.scheme ?? '—'} />
           <Row
             label="適格請求書"
@@ -45,8 +45,13 @@ export default async function ServiceDetail({
           <div className="kicker" style={{ marginBottom: 8 }}>信頼シグナル（透明・載る≠信頼）</div>
           {signals?.measured ? (
             <>
-              <Row label="着金 tx 数" value={String(signals.txCount)} />
-              <Row label="ユニーク送金元" value={String(signals.uniqueWallets)} />
+              <Row label="累計着金額" value={formatJpyc(signals.volumeRaw ?? undefined)} mono />
+              <Row
+                label="着金 tx 数"
+                value={`${signals.txCount}${signals.capped ? '+（上限到達）' : ''}`}
+                mono
+              />
+              <Row label="ユニーク送金元" value={String(signals.uniqueWallets)} mono />
             </>
           ) : (
             <p style={{ color: 'var(--muted)', margin: 0 }}>
@@ -64,11 +69,11 @@ export default async function ServiceDetail({
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '6px 0', borderBottom: '1px solid var(--line)' }}>
       <span style={{ color: 'var(--muted)' }}>{label}</span>
-      <strong style={{ textAlign: 'right', wordBreak: 'break-all' }}>{value}</strong>
+      <strong className={mono ? 'mono' : undefined} style={{ textAlign: 'right', wordBreak: 'break-all' }}>{value}</strong>
     </div>
   );
 }

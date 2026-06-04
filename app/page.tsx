@@ -1,5 +1,7 @@
 import { fetchServices, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
-import { formatJpyc, shortAddr } from '@/lib/format';
+import { getEconomySnapshot } from '@/lib/analytics';
+import { formatJpyc, formatYenCompact, shortAddr } from '@/lib/format';
+import { Donut, Legend, PALETTE, type Segment } from './_components/charts';
 
 // registry.json / catalog をリクエスト時に取得（ビルドを外部到達性に依存させない）。
 export const dynamic = 'force-dynamic';
@@ -17,6 +19,24 @@ export default async function Home() {
         a.asset?.toLowerCase() === JPYC_POLYGON,
     ),
   );
+
+  // 経済スナップショット（JPYC/Polygon の実測。未接続/空ならサンプル表示）
+  const snapshot = await getEconomySnapshot(services);
+  const toYen = (raw: string) => {
+    try {
+      return Number(BigInt(raw) / 10n ** 18n);
+    } catch {
+      return 0;
+    }
+  };
+  const top = snapshot.perService.slice(0, 5);
+  const restYen = snapshot.perService.slice(5).reduce((a, b) => a + toYen(b.volumeRaw), 0);
+  const segments: Segment[] = top.map((s, i) => ({
+    label: s.label,
+    value: toYen(s.volumeRaw),
+    color: PALETTE[i],
+  }));
+  if (restYen > 0) segments.push({ label: 'その他', value: restYen, color: PALETTE[5] });
 
   return (
     <>
@@ -46,6 +66,41 @@ export default async function Home() {
       </header>
 
       <main>
+        <section id="economy" className="wrap">
+          <p className="kicker">経済スナップショット</p>
+          <h2>
+            JPYC（Polygon）x402 経済の実測
+            {snapshot.demo && <span className="badge">サンプル表示</span>}
+          </h2>
+          <p className="sub">
+            x402scan が Base/Solana で見せている経済を、JPYC/Polygon で可視化する。
+            {snapshot.demo
+              ? '（現在は仮の数値。ALCHEMY_POLYGON_URL を設定すると実測値に切り替わる）'
+              : `${snapshot.measuredCount} サービスをオンチェーン実測。`}
+          </p>
+
+          <div className="stats">
+            <Stat num={String(snapshot.serviceCount)} cap="登録サービス" />
+            <Stat num={snapshot.totalTx.toLocaleString('ja-JP')} cap="JPYC 着金 tx" />
+            <Stat num={formatYenCompact(snapshot.totalVolumeRaw)} cap="累計流通量" />
+            <Stat num={String(snapshot.measuredCount)} cap="実測済サービス" />
+          </div>
+
+          <div className="chartrow">
+            <Donut
+              segments={segments}
+              centerTop={formatYenCompact(snapshot.totalVolumeRaw)}
+              centerSub="累計 JPYC"
+            />
+            <div className="chartside">
+              <div className="kicker" style={{ marginBottom: 10 }}>
+                サービス別 JPYC 流通シェア
+              </div>
+              <Legend segments={segments} />
+            </div>
+          </div>
+        </section>
+
         <section id="services" className="wrap">
           <p className="kicker">登録リソース</p>
           <h2>JPYC（Polygon）で買える x402 リソース</h2>
@@ -81,7 +136,7 @@ export default async function Home() {
                       <div className="res">{s.resource}</div>
                     </div>
                     {t ? <span className="chip ok">T番号あり</span> : <span className="chip">免税/未登録</span>}
-                    <span className="chip">{shortAddr(accept?.payTo)}</span>
+                    <span className="chip mono">{shortAddr(accept?.payTo)}</span>
                     <span className="price">{formatJpyc(accept?.maxAmountRequired)}</span>
                   </a>
                 );
@@ -100,5 +155,14 @@ export default async function Home() {
         </footer>
       </main>
     </>
+  );
+}
+
+function Stat({ num, cap }: { num: string; cap: string }) {
+  return (
+    <div className="stat">
+      <div className="num mono">{num}</div>
+      <div className="cap">{cap}</div>
+    </div>
   );
 }
