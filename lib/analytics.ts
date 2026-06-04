@@ -1,8 +1,10 @@
-// 経済スナップショット: registry の JPYC(Polygon) サービス群を Alchemy 走査で集計。
-// Alchemy 未接続 / registry 空のときは「サンプル表示」にフォールバック（仮表示・軽量）。
-// 重い分析 stack は持たず、signals.ts の Alchemy 走査結果を足し合わせるだけ。
+// 経済スナップショット。2 軸で構成:
+//  (1) チェーン全体（registry 非依存・常に実数）= totalSupply 等 → lib/chain.ts
+//  (2) サービス別の実測 = 登録 payTo ごとの JPYC 着金を signals で集計
+// 登録 payTo が 0 件なら、サービス別は「実績ゼロ」を正直に表示する（fake sample は出さない）。
 
 import { getSignals } from './signals';
+import { getChainStats, type ChainStats } from './chain';
 import { JPYC_POLYGON, POLYGON_NETWORK, type ResolvedService } from './registry';
 
 export interface ServiceStat {
@@ -12,49 +14,24 @@ export interface ServiceStat {
 }
 
 export interface EconomySnapshot {
-  measured: boolean; // 1件でも実測(Alchemy)が取れたか
-  demo: boolean; // サンプル表示か
-  serviceCount: number; // registry の JPYC サービス数（実数）
-  measuredCount: number;
+  chain: ChainStats; // チェーン全体（実数 or 未接続）
+  serviceCount: number; // registry の JPYC サービス数
+  measuredCount: number; // うち実測が取れた数
   totalTx: number;
   totalVolumeRaw: string;
-  perService: ServiceStat[];
-}
-
-// 仮表示用サンプル（実測未接続でもデザインを確認できるように）
-const yen = (n: number) => (BigInt(n) * 10n ** 18n).toString();
-const DEMO_SERVICES: ServiceStat[] = [
-  { label: 'JPYC EC', txCount: 128, volumeRaw: yen(512000) },
-  { label: 'newsletter (kakedashi3)', txCount: 42, volumeRaw: yen(21000) },
-  { label: 'sample shop', txCount: 19, volumeRaw: yen(28500) },
-  { label: 'paylog API', txCount: 31, volumeRaw: yen(3100) },
-];
-
-function demoSnapshot(serviceCount?: number): EconomySnapshot {
-  const totalTx = DEMO_SERVICES.reduce((a, b) => a + b.txCount, 0);
-  const totalVol = DEMO_SERVICES.reduce((a, b) => a + BigInt(b.volumeRaw), 0n);
-  return {
-    measured: false,
-    demo: true,
-    serviceCount: serviceCount ?? DEMO_SERVICES.length,
-    measuredCount: 0,
-    totalTx,
-    totalVolumeRaw: totalVol.toString(),
-    perService: [...DEMO_SERVICES].sort((a, b) => b.txCount - a.txCount),
-  };
+  perService: ServiceStat[]; // 実測のあるサービスのみ（空なら []）
 }
 
 export async function getEconomySnapshot(
   services: ResolvedService[],
 ): Promise<EconomySnapshot> {
+  const chain = await getChainStats();
+
   const jpyc = services.filter(s =>
     s.accepts?.some(
       a => a.network === POLYGON_NETWORK && a.asset?.toLowerCase() === JPYC_POLYGON,
     ),
   );
-
-  // registry が空 → サンプル表示
-  if (jpyc.length === 0) return demoSnapshot();
 
   const stats = await Promise.all(
     jpyc.map(async s => {
@@ -71,22 +48,20 @@ export async function getEconomySnapshot(
     }),
   );
 
-  const measuredCount = stats.filter(x => x.measured).length;
-  // 登録はあるが Alchemy 未接続 → 実数 serviceCount を保ちつつサンプル数値で描画
-  if (measuredCount === 0) return demoSnapshot(jpyc.length);
-
-  const totalTx = stats.reduce((a, b) => a + b.txCount, 0);
-  const totalVol = stats.reduce((a, b) => a + BigInt(b.volumeRaw || '0'), 0n);
+  const measured = stats.filter(x => x.measured);
+  const totalTx = measured.reduce((a, b) => a + b.txCount, 0);
+  const totalVol = measured.reduce((a, b) => a + BigInt(b.volumeRaw || '0'), 0n);
 
   return {
-    measured: true,
-    demo: false,
+    chain,
     serviceCount: jpyc.length,
-    measuredCount,
+    measuredCount: measured.length,
     totalTx,
     totalVolumeRaw: totalVol.toString(),
-    perService: stats
+    // 流通量 > 0 のサービスのみ円グラフ対象に（実績ゼロは正直に空扱い）
+    perService: measured
+      .filter(x => x.volumeRaw !== '0')
       .map(({ label, txCount, volumeRaw }) => ({ label, txCount, volumeRaw }))
-      .sort((a, b) => b.txCount - a.txCount),
+      .sort((a, b) => Number(BigInt(b.volumeRaw) - BigInt(a.volumeRaw))),
   };
 }

@@ -3,19 +3,30 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'よくある質問（FAQ）',
   description:
-    'jp402（JPYC × x402 ディスカバリー scanner）についてのよくある質問。掲載方法・買い手エージェントの使い方・信頼シグナル・JPYC/Polygon 限定の理由などを丁寧に解説します。',
+    'jp402（JPYC × x402 ディスカバリー scanner）についてのよくある質問。全般・売り手向け・買い手向けに分けて、掲載方法やエージェントの使い方、信頼シグナルなどを丁寧に解説します。',
 };
 
 const REGISTRY_REPO = 'https://github.com/kakedashi3/jp402-registry';
 const REGISTER_URL = 'https://kakedashi3.github.io/jp402-registry/register.html';
 
+type Cat = 'general' | 'seller' | 'buyer';
+
 interface QA {
+  cat: Cat;
   q: string;
   a: React.ReactNode;
 }
 
+const GROUPS: { key: Cat; kicker: string; title: string }[] = [
+  { key: 'general', kicker: '全般', title: 'jp402 について' },
+  { key: 'seller', kicker: '売り手向け', title: '載せる・登録する' },
+  { key: 'buyer', kicker: '買い手向け', title: '買う・エージェントで使う' },
+];
+
 const FAQ: QA[] = [
+  // ───────── 全般 ─────────
   {
+    cat: 'general',
     q: 'jp402 とは何ですか？',
     a: (
       <>
@@ -28,6 +39,7 @@ const FAQ: QA[] = [
     ),
   },
   {
+    cat: 'general',
     q: 'JPYC 株式会社の公式サービスですか？',
     a: (
       <>
@@ -38,6 +50,7 @@ const FAQ: QA[] = [
     ),
   },
   {
+    cat: 'general',
     q: 'なぜ JPYC と Polygon に限定しているのですか？',
     a: (
       <>
@@ -49,6 +62,32 @@ const FAQ: QA[] = [
     ),
   },
   {
+    cat: 'general',
+    q: '「載っている」ことは「信頼できる」ことと同じですか？',
+    a: (
+      <>
+        いいえ。jp402 は <strong>「載る（listing）」と「信頼される（trust）」を別レイヤー</strong>として扱います。
+        準拠ファイルを置けば誰でも載れますが、それは推薦を意味しません。各リソースには着金実績などの
+        信頼シグナルを透明に表示し、利用者・エージェントが自分で判断できるようにすることが scanner の役割です。
+      </>
+    ),
+  },
+  {
+    cat: 'general',
+    q: 'ソースコードやライセンスは公開されていますか？',
+    a: (
+      <>
+        jp402（本サイト）と{' '}
+        <a href={REGISTRY_REPO} target="_blank" rel="noopener">jp402-registry</a>
+        （台帳・標準）はいずれも GitHub で公開しています。台帳は誰でも読める JSON 形式で、
+        他のツールからも参照できる公共のデータ源として運用しています。
+      </>
+    ),
+  },
+
+  // ───────── 売り手向け ─────────
+  {
+    cat: 'seller',
     q: '売り手として掲載されるにはどうすればよいですか？',
     a: (
       <>
@@ -60,6 +99,7 @@ const FAQ: QA[] = [
     ),
   },
   {
+    cat: 'seller',
     q: '掲載に審査や手数料はありますか？',
     a: (
       <>
@@ -70,7 +110,21 @@ const FAQ: QA[] = [
     ),
   },
   {
-    q: '買い手やAIエージェントはどう使いますか？',
+    cat: 'seller',
+    q: '適格請求書（インボイス）や T 番号には対応していますか？',
+    a: (
+      <>
+        x-jp402 仕様には invoice 区画があり、登録番号（T 番号）や適格請求書発行事業者かどうかを記述できます。
+        現状は自己申告値の表示で、国税庁の適格請求書 Web-API による実在検証（verified）は
+        順次対応していく予定です。それまでは「T 番号あり（要実在検証）」のように明示します。
+      </>
+    ),
+  },
+
+  // ───────── 買い手向け ─────────
+  {
+    cat: 'buyer',
+    q: '買い手や AI エージェントはどう使いますか？',
     a: (
       <>
         2 通りあります。(1) トップページの「買い手エージェント向け」セクションにあるプロンプトをコピーして、
@@ -83,16 +137,7 @@ const FAQ: QA[] = [
     ),
   },
   {
-    q: '「載っている」ことは「信頼できる」ことと同じですか？',
-    a: (
-      <>
-        いいえ。jp402 は <strong>「載る（listing）」と「信頼される（trust）」を別レイヤー</strong>として扱います。
-        準拠ファイルを置けば誰でも載れますが、それは推薦を意味しません。各リソースには着金実績などの
-        信頼シグナルを透明に表示し、利用者・エージェントが自分で判断できるようにすることが scanner の役割です。
-      </>
-    ),
-  },
-  {
+    cat: 'buyer',
     q: '表示される実績データ（着金額・tx 数）はどこから来ますか？',
     a: (
       <>
@@ -104,16 +149,7 @@ const FAQ: QA[] = [
     ),
   },
   {
-    q: '適格請求書（インボイス）や T 番号には対応していますか？',
-    a: (
-      <>
-        x-jp402 仕様には invoice 区画があり、登録番号（T 番号）や適格請求書発行事業者かどうかを記述できます。
-        現状は自己申告値の表示で、国税庁の適格請求書 Web-API による実在検証（verified）は
-        順次対応していく予定です。それまでは「T 番号あり（要実在検証）」のように明示します。
-      </>
-    ),
-  },
-  {
+    cat: 'buyer',
     q: '詐欺やなりすましのリスクはどう考えていますか？',
     a: (
       <>
@@ -122,17 +158,6 @@ const FAQ: QA[] = [
         <strong>payTo（受取先）はオンチェーンの事実</strong>なので、着金実績ゼロやアドレス不一致は露見し、
         信頼シグナルで自然に下位へ沈みます。既知の悪性は denylist で除外します。
         最終的な支払い判断は、買い手側のポリシー（支出上限など）と併用してください。
-      </>
-    ),
-  },
-  {
-    q: 'ソースコードやライセンスは公開されていますか？',
-    a: (
-      <>
-        jp402（本サイト）と{' '}
-        <a href={REGISTRY_REPO} target="_blank" rel="noopener">jp402-registry</a>
-        （台帳・標準）はいずれも GitHub で公開しています。台帳は誰でも読める JSON 形式で、
-        他のツールからも参照できる公共のデータ源として運用しています。
       </>
     ),
   },
@@ -155,23 +180,33 @@ export default function FaqPage() {
           <span className="eyebrow">FAQ · よくある質問</span>
           <h1>よくある質問</h1>
           <p className="lede">
-            jp402 の使い方・掲載方法・信頼の考え方について、よくいただく質問をまとめました。
+            jp402 の使い方・掲載方法・信頼の考え方について、
+            <strong>全般 / 売り手向け / 買い手向け</strong>に分けてまとめました。
           </p>
         </div>
       </header>
 
       <main className="wrap">
-        <section>
-          <div className="faqlist">
-            {FAQ.map((item, i) => (
-              <details className="faq" key={i}>
-                <summary>{item.q}</summary>
-                <div className="faq-a">{item.a}</div>
-              </details>
-            ))}
-          </div>
+        {GROUPS.map(group => {
+          const items = FAQ.filter(item => item.cat === group.key);
+          return (
+            <section key={group.key} className="faq-group">
+              <p className="kicker">{group.kicker}</p>
+              <h2>{group.title}</h2>
+              <div className="faqlist">
+                {items.map((item, i) => (
+                  <details className="faq" key={i}>
+                    <summary>{item.q}</summary>
+                    <div className="faq-a">{item.a}</div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          );
+        })}
 
-          <div className="empty" style={{ marginTop: 40 }}>
+        <section>
+          <div className="empty">
             <div className="big">解決しませんでしたか？</div>
             <p>
               不明点・要望は jp402-registry の Issue / Discussion で受け付けています。

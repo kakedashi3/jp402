@@ -48,9 +48,10 @@ body {
   /* §3.5 日本語本文は line-height 1.7〜2.0 / letter-spacing 0.02〜0.04em */
   line-height: 1.8;
   letter-spacing: .02em;
-  /* §3.6 禁則 + 長いURL/英単語の折り返し */
+  /* §3.6 禁則 + 折り返し */
+  word-break: keep-all;     /* CJK の語中改行を防ぐ（「掲載台帳」が 掲|載 で割れない） */
   line-break: strict;
-  overflow-wrap: anywhere;
+  overflow-wrap: anywhere;  /* 長い英単語/URL はあふれる時だけ折り返す */
   /* §3.7 和欧混植のカーニング（本文は palt を当てない） */
   font-feature-settings: 'kern' 1;
   -webkit-font-smoothing: antialiased;
@@ -112,6 +113,7 @@ h2 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.4; letter-spacing: 
 /* economy snapshot */
 .badge { display: inline-block; vertical-align: middle; margin-left: 10px; font-size: .62em; font-weight: 700;
   color: var(--warning); background: #fdf8ee; border: 1px solid #f0e0bd; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
+.snapnote { color: var(--disabled); font-size: .76rem; margin: -16px 0 0; }
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-m); margin: var(--sp-l) 0 var(--sp-xl); }
 .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px var(--sp-l); box-shadow: var(--sh-1); }
 .stat .num { font-size: 1.5rem; font-weight: 800; color: var(--ink); letter-spacing: 0; }
@@ -133,6 +135,8 @@ h2 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.4; letter-spacing: 
 }
 
 /* FAQ */
+.faq-group { padding: var(--sp-xl) 0 0; }
+.faq-group h2 { margin-bottom: var(--sp-l); }
 .faqlist { display: grid; gap: var(--sp-m); }
 details.faq { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sh-1); overflow: hidden; }
 details.faq summary { cursor: pointer; list-style: none; padding: 18px var(--sp-l); font-weight: 700; font-size: 1.02rem;

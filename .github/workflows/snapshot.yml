@@ -1,0 +1,54 @@
+name: economy snapshot
+
+# 実数スナップショット（public/snapshot.json + history.json）を生成・commit する。
+# トリガー: ① 週次 cron ② 手動 ③ jp402-registry の登録（repository_dispatch）
+on:
+  # 最初は手動のみ。自動化（週次 cron + registry 登録 dispatch）は準備が整ったら有効化する。
+  workflow_dispatch: {}
+  # schedule:
+  #   - cron: '0 0 * * 1' # 毎週月曜 00:00 UTC（= 月曜 9:00 JST）
+  # repository_dispatch:
+  #   types: [registry-updated]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate snapshot
+        env:
+          ALCHEMY_POLYGON_URL: ${{ secrets.ALCHEMY_POLYGON_URL }}
+          # 任意: 既定以外の registry を読む場合
+          NEXT_PUBLIC_REGISTRY_URL: ${{ vars.NEXT_PUBLIC_REGISTRY_URL }}
+        run: node scripts/snapshot.mjs
+
+      - name: Commit if changed
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/snapshot.json public/history.json
+          if git diff --staged --quiet; then
+            echo "変更なし"
+          else
+            case "$EVENT_NAME" in
+              repository_dispatch) REASON="registry 登録" ;;
+              schedule) REASON="週次" ;;
+              *) REASON="手動" ;;
+            esac
+            git commit -m "chore(snapshot): 経済スナップショット更新（${REASON}）"
+            git push
+          fi

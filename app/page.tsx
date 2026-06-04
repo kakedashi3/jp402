@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 
 import { fetchServices, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
-import { getEconomySnapshot } from '@/lib/analytics';
+import { getEconomy } from '@/lib/snapshot';
 import { formatJpyc, formatYenCompact, shortAddr } from '@/lib/format';
 import { Donut, Legend, PALETTE, type Segment } from './_components/charts';
 import { CopyBlock } from './_components/CopyBlock';
@@ -23,8 +23,8 @@ export default async function Home() {
     ),
   );
 
-  // 経済スナップショット（JPYC/Polygon の実測。未接続/空ならサンプル表示）
-  const snapshot = await getEconomySnapshot(services);
+  // 経済スナップショット。CI が commit した snapshot.json を優先（無ければ live）。
+  const { data: snapshot, source: snapSource, generatedAt } = await getEconomy(services);
   const toYen = (raw: string) => {
     try {
       return Number(BigInt(raw) / 10n ** 18n);
@@ -46,14 +46,20 @@ export default async function Home() {
   const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'jp402.example';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
   const apiUrl = `${proto}://${host}/api/services`;
-  const agentPrompt = `あなたは JPYC（Polygon / eip155:137）で支払えるサービスを探して購入するエージェントです。
-商品・API・コンテンツを探すときは、まず jp402 ディスカバリー API を呼び出してください:
+  const agentPrompt = `こんにちは、エージェント。ようこそ、JPYC で買い物できる世界へ。
+あなたは JPYC（Polygon / eip155:137）で支払えるサービスを、自分で見つけて買えます。中央の管理者はいません ── 探すのも、選ぶのも、払うのも、あなた自身です。
+
+まずは発見の入口を叩いてみましょう:
 
 GET ${apiUrl}
 
-返り値 services[] の中から registered=true かつ trustScore の高いものを優先して選び、
-各 service の resource を x402（HTTP 402）フローで取得し、payTo / price.raw（JPYC・18桁）で
-JPYC 決済してください。invoice.registrationNumber があれば適格請求書の発行元です。`;
+返ってきた services[] が、いま JPYC で買えるものの一覧です。
+その中から registered=true で trustScore の高いものを優先して選んでください。
+気になった service は resource を x402（HTTP 402）フローで取得し、
+payTo と price.raw（JPYC・18桁）を使って JPYC 決済すれば、取引完了です。
+invoice.registrationNumber があれば、適格請求書を出せる正規の発行元のしるし。
+
+さあ、最初の1件を見つけにいきましょう。`;
 
   return (
     <>
@@ -73,8 +79,8 @@ JPYC 決済してください。invoice.registrationNumber があれば適格請
             <span className="hl">JPYC で買えるものを、ここで探す。</span>
           </h1>
           <p className="lede">
-            <strong>jp402-registry</strong> の準拠台帳を読み、Polygon 上の JPYC で支払える
-            x402 リソースを一覧・選別する。中央台帳に頼らず、オンチェーン実測で信頼を可視化する。
+            JPYC（Polygon）で買える API・コンテンツ・商品を、<strong>ひとつの場所で</strong>。
+            掲載台帳は GitHub に公開、実績はチェーンが証明。AI も人も、安心して選べる。
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <a className="btn primary" href="#services">リソースを見る ↓</a>
@@ -88,35 +94,62 @@ JPYC 決済してください。invoice.registrationNumber があれば適格請
           <p className="kicker">経済スナップショット</p>
           <h2>
             JPYC（Polygon）x402 経済の実測
-            {snapshot.demo && <span className="badge">サンプル表示</span>}
+            {!snapshot.chain.measured && <span className="badge">実測未接続</span>}
           </h2>
           <p className="sub">
             x402scan が Base/Solana で見せている経済を、JPYC/Polygon で可視化する。
-            {snapshot.demo
-              ? '（現在は仮の数値。ALCHEMY_POLYGON_URL を設定すると実測値に切り替わる）'
-              : `${snapshot.measuredCount} サービスをオンチェーン実測。`}
+            {snapshot.chain.measured
+              ? 'チェーン全体は totalSupply で実測。サービス別の実績は登録 payTo が増えるほど積み上がる。'
+              : '（ALCHEMY_POLYGON_URL を設定するとチェーン全体・サービス別とも実測値になる）'}
           </p>
+          {snapSource === 'snapshot' && generatedAt && (
+            <p className="snapnote mono">
+              週次スナップショット · {new Date(generatedAt).toLocaleString('ja-JP')} 時点（売り手登録時にも自動更新）
+            </p>
+          )}
 
           <div className="stats">
+            <Stat
+              num={snapshot.chain.measured ? formatYenCompact(snapshot.chain.totalSupplyRaw ?? undefined) : '—'}
+              cap="JPYC 総供給量 (Polygon)"
+            />
             <Stat num={String(snapshot.serviceCount)} cap="登録サービス" />
-            <Stat num={snapshot.totalTx.toLocaleString('ja-JP')} cap="JPYC 着金 tx" />
-            <Stat num={formatYenCompact(snapshot.totalVolumeRaw)} cap="累計流通量" />
-            <Stat num={String(snapshot.measuredCount)} cap="実測済サービス" />
+            <Stat num={snapshot.totalTx.toLocaleString('ja-JP')} cap="登録 payTo 着金 tx" />
+            <Stat num={formatYenCompact(snapshot.totalVolumeRaw)} cap="登録 payTo 累計着金" />
           </div>
 
-          <div className="chartrow">
-            <Donut
-              segments={segments}
-              centerTop={formatYenCompact(snapshot.totalVolumeRaw)}
-              centerSub="累計 JPYC"
-            />
-            <div className="chartside">
-              <div className="kicker" style={{ marginBottom: 10 }}>
-                サービス別 JPYC 流通シェア
+          {segments.length > 0 ? (
+            <div className="chartrow">
+              <Donut
+                segments={segments}
+                centerTop={formatYenCompact(snapshot.totalVolumeRaw)}
+                centerSub="登録 payTo 累計"
+              />
+              <div className="chartside">
+                <div className="kicker" style={{ marginBottom: 10 }}>
+                  サービス別 JPYC 流通シェア
+                </div>
+                <Legend segments={segments} />
               </div>
-              <Legend segments={segments} />
             </div>
-          </div>
+          ) : (
+            <div className="empty">
+              <div className="big">サービス別の実績はまだありません</div>
+              <p>
+                登録された payTo がまだ無いため、サービス別の JPYC 着金実績はゼロです。
+                {snapshot.chain.measured && (
+                  <>
+                    <br />
+                    一方、Polygon 上の JPYC 総供給量{' '}
+                    <strong>{formatYenCompact(snapshot.chain.totalSupplyRaw ?? undefined)}</strong>{' '}
+                    は実測値です（ブロック {snapshot.chain.blockNumber?.toLocaleString('ja-JP')}）。
+                  </>
+                )}
+                <br />
+                売り手が registry に載るたび、ここに実測シェアが積み上がります。
+              </p>
+            </div>
+          )}
         </section>
 
         <section id="services" className="wrap">
