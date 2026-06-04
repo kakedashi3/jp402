@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     '登録前に、jp402 があなたのオリジンから何を解決するかを確認する。/openapi.json を解決し各ルートを probe（登録はされません）。',
 };
 
-const REGISTER_URL = 'https://kakedashi3.github.io/jp402-registry/register.html';
+const REGISTER_URL = 'https://registry.jp402.com/';
 
 export default function TestPage() {
   return (

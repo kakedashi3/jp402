@@ -10,7 +10,7 @@ import { CopyBlock } from './_components/CopyBlock';
 export const dynamic = 'force-dynamic';
 
 const REGISTRY_REPO = 'https://github.com/kakedashi3/jp402-registry';
-const REGISTER_URL = 'https://kakedashi3.github.io/jp402-registry/register.html';
+const REGISTER_URL = 'https://registry.jp402.com/';
 
 export default async function Home() {
   const services = await fetchServices();

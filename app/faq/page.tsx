@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const REGISTRY_REPO = 'https://github.com/kakedashi3/jp402-registry';
-const REGISTER_URL = 'https://kakedashi3.github.io/jp402-registry/register.html';
+const REGISTER_URL = 'https://registry.jp402.com/';
 
 type Cat = 'general' | 'seller' | 'buyer';
 

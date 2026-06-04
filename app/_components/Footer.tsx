@@ -1,5 +1,5 @@
 const REGISTRY_REPO = 'https://github.com/kakedashi3/jp402-registry';
-const REGISTER_URL = 'https://kakedashi3.github.io/jp402-registry/register.html';
+const REGISTER_URL = 'https://registry.jp402.com/';
 
 // 全ページ共通フッター（layout.tsx から描画）。
 // jp402 は kakedashi3 個人 OSS 帽子の非公式プロジェクト。著作権表記も kakedashi3 名義で統一する。
