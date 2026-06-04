@@ -43,14 +43,6 @@ export default function TestPage() {
             <a href={REGISTER_URL} target="_blank" rel="noopener">レジストリに登録（手順①②③）</a>
           </p>
         </section>
-
-        <footer>
-          <div style={{ marginBottom: 12 }}>
-            <a href="/">ホーム</a>
-            <a href="/faq">FAQ</a>
-          </div>
-          ⚠️ 有志による非公式プロジェクトです。JPYC 株式会社とは関係ありません（JPYC は同社の登録商標）。
-        </footer>
       </main>
     </>
   );

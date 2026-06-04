@@ -2,6 +2,8 @@ import './globals.css';
 
 import type { Metadata, Viewport } from 'next';
 
+import { Footer } from './_components/Footer';
+
 export const metadata: Metadata = {
   title: {
     default: 'jp402 — JPYC × x402 ディスカバリーレイヤー',
@@ -20,7 +22,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

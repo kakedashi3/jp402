@@ -222,14 +222,6 @@ export default function FaqPage() {
             </p>
           </div>
         </section>
-
-        <footer>
-          <div style={{ marginBottom: 12 }}>
-            <a href="/">ホーム</a>
-            <a href={REGISTRY_REPO} target="_blank" rel="noopener">jp402-registry（台帳/標準）</a>
-          </div>
-          ⚠️ 有志による非公式プロジェクトです。JPYC 株式会社とは関係ありません（JPYC は同社の登録商標）。
-        </footer>
       </main>
     </>
   );
