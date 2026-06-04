@@ -108,7 +108,7 @@ function parseCatalog(cat: Catalog, sourceUrl: string): ResolvedService[] {
 
 // 多形式 reader（Postel の法則）: OpenAPI 優先 → Bazaar カタログ → 後方互換 catalog_url。
 // 宣言の正典は OpenAPI、最終真実は runtime 402（呼び出し側で確定）。
-async function resolveEntry(e: RegistryEntry): Promise<ResolvedService[]> {
+export async function resolveEntry(e: RegistryEntry): Promise<ResolvedService[]> {
   const { parseOpenApi } = await import('./openapi');
 
   if (e.openapi_url) {
@@ -131,6 +131,14 @@ async function resolveEntry(e: RegistryEntry): Promise<ResolvedService[]> {
   }
 
   return [];
+}
+
+// テスト用: 1 個の入力（オリジン or openapi.json/catalog の URL）を解決する。登録はしない。
+export async function resolveOrigin(input: string): Promise<ResolvedService[]> {
+  const s = input.trim().replace(/\/+$/, '');
+  if (s.endsWith('/openapi.json')) return resolveEntry({ openapi_url: s });
+  if (s.endsWith('.well-known/x402-catalog.json')) return resolveEntry({ catalog_url: s });
+  return resolveEntry({ url: s }); // オリジン → /openapi.json 優先・無ければ .well-known
 }
 
 export async function fetchRegistry(): Promise<RegistryFile> {

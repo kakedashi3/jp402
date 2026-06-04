@@ -110,6 +110,14 @@ section { padding: clamp(48px, 7vw, 76px) 0; }
 h2 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.4; letter-spacing: 0; margin: 0 0 var(--sp-s); font-weight: 800; font-feature-settings: 'palt' 1; }
 .sub { color: var(--muted); margin: 0 0 28px; }
 
+/* test (登録前チェック) */
+.testbar { display: flex; gap: 10px; flex-wrap: wrap; }
+.testinput { flex: 1; min-width: 240px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
+  font-size: 16px; background: var(--card); color: var(--fg); }
+.testinput:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,92,231,.15); }
+.btn.primary[disabled] { opacity: .6; cursor: default; }
+.testerr { color: var(--danger); font-size: .9rem; margin: 12px 0 0; }
+
 /* economy snapshot */
 .badge { display: inline-block; vertical-align: middle; margin-left: 10px; font-size: .62em; font-weight: 700;
   color: var(--warning); background: #fdf8ee; border: 1px solid #f0e0bd; border-radius: 999px; padding: 3px 10px; letter-spacing: .02em; }
