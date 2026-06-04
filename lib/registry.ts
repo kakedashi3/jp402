@@ -38,6 +38,27 @@ export interface ResolvedService extends Service {
   publisher: string;
   catalogUrl: string;
   id: string; // resource を base64url 化した安定キー
+  // 具体 resource(必須パラメータ無し・非テンプレート)= live 402 probe 可能か。
+  // false の場合は宣言ベース(最終真実は purchase 時の runtime 402)。
+  probeable?: boolean;
+}
+
+// runtime 402 確定: 具体 resource を叩いて 402 が返るか確認(5分キャッシュ)。
+// 宣言と runtime の一致確認。param/テンプレ resource は呼び出し側で null 扱いにする。
+const probeCache = new Map<string, { exp: number; ok: boolean | null }>();
+
+export async function confirm402(resource: string): Promise<boolean | null> {
+  const hit = probeCache.get(resource);
+  if (hit && hit.exp > Date.now()) return hit.ok;
+  let ok: boolean | null = null;
+  try {
+    const r = await fetch(resource, { redirect: 'follow' });
+    ok = r.status === 402;
+  } catch {
+    ok = null;
+  }
+  probeCache.set(resource, { exp: Date.now() + 5 * 60 * 1000, ok });
+  return ok;
 }
 
 // registry エントリ。OpenAPI(x402scan spec) 正典に pivot。後方互換で catalog_url も受容。
@@ -77,6 +98,7 @@ function parseCatalog(cat: Catalog, sourceUrl: string): ResolvedService[] {
     publisher: cat.catalog?.publisher ?? '(no publisher)',
     catalogUrl: sourceUrl,
     id: serviceId(s.resource),
+    probeable: !/\{[^}]+\}/.test(s.resource), // テンプレートでなければ probe 可
   }));
 }
 

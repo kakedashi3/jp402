@@ -4,7 +4,7 @@
 
 import { NextResponse } from 'next/server';
 
-import { fetchServices, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
+import { confirm402, fetchServices, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
 import { getSignals } from '@/lib/signals';
 
 export const dynamic = 'force-dynamic';
@@ -43,6 +43,8 @@ export async function GET() {
         s.accepts[0];
       const sig = accept?.payTo ? await getSignals(accept.payTo) : null;
       const inv = s['x-jp402']?.invoice;
+      // runtime 402 確定: 具体 resource のみ probe(param/テンプレは null=宣言ベース・purchase 時に確定)
+      const live402 = s.probeable ? await confirm402(s.resource) : null;
 
       // registered = registry 掲載済（PR opt-in）。verified = T番号 NTA 裏取り（未実装→false）。
       const registered = true;
@@ -67,6 +69,7 @@ export async function GET() {
           : null,
         registered,
         verified,
+        live402, // true=402 確認済 / false=402 以外 / null=宣言ベース(param・テンプレ。purchase 時に runtime 402 が真実)
         signals: {
           measured,
           txCount: sig?.txCount ?? null,
