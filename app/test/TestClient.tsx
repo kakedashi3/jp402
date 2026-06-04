@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Svc {
   publisher: string;
@@ -32,8 +32,18 @@ export function TestClient() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
 
-  async function run() {
-    let o = origin.trim();
+  // ?origin= が付いていれば prefill + 自動実行（register.html の「登録前にテスト」導線用）
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get('origin');
+    if (p) {
+      setOrigin(p);
+      run(p);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function run(o0?: string) {
+    let o = (o0 ?? origin).trim();
     if (!o) return;
     if (!/^https?:\/\//.test(o)) o = 'https://' + o;
     setErr('');
@@ -65,7 +75,7 @@ export function TestClient() {
           spellCheck={false}
           inputMode="url"
         />
-        <button className="btn primary" onClick={run} disabled={loading}>
+        <button className="btn primary" onClick={() => run()} disabled={loading}>
           {loading ? '実行中…' : 'ディスカバリ実行'}
         </button>
       </div>
