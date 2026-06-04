@@ -1,7 +1,10 @@
+import { headers } from 'next/headers';
+
 import { fetchServices, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
 import { getEconomySnapshot } from '@/lib/analytics';
 import { formatJpyc, formatYenCompact, shortAddr } from '@/lib/format';
 import { Donut, Legend, PALETTE, type Segment } from './_components/charts';
+import { CopyBlock } from './_components/CopyBlock';
 
 // registry.json / catalog をリクエスト時に取得（ビルドを外部到達性に依存させない）。
 export const dynamic = 'force-dynamic';
@@ -38,6 +41,20 @@ export default async function Home() {
   }));
   if (restYen > 0) segments.push({ label: 'その他', value: restYen, color: PALETTE[5] });
 
+  // 表示中のオリジンから API URL を組み立てる（コピペ用プロンプトに埋める）
+  const h = await headers();
+  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'jp402.example';
+  const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+  const apiUrl = `${proto}://${host}/api/services`;
+  const agentPrompt = `あなたは JPYC（Polygon / eip155:137）で支払えるサービスを探して購入するエージェントです。
+商品・API・コンテンツを探すときは、まず jp402 ディスカバリー API を呼び出してください:
+
+GET ${apiUrl}
+
+返り値 services[] の中から registered=true かつ trustScore の高いものを優先して選び、
+各 service の resource を x402（HTTP 402）フローで取得し、payTo / price.raw（JPYC・18桁）で
+JPYC 決済してください。invoice.registrationNumber があれば適格請求書の発行元です。`;
+
   return (
     <>
       <header className="hero">
@@ -46,6 +63,7 @@ export default async function Home() {
             <span className="logo">jp402<span className="dot">.</span></span>
             <div>
               <a href="#services">一覧</a>
+              <a href="/faq">FAQ</a>
               <a href={REGISTRY_REPO} target="_blank" rel="noopener">GitHub</a>
             </div>
           </nav>
@@ -145,8 +163,30 @@ export default async function Home() {
           )}
         </section>
 
+        <section id="agent" className="wrap">
+          <p className="kicker">買い手エージェント向け</p>
+          <h2>エージェントに JPYC 経済を覚えさせる</h2>
+          <p className="sub">
+            下のプロンプトを AI エージェント（Claude / ChatGPT / kova / 自作 agent 等）に貼り付けるだけ。
+            jp402 の list API を発見の入口として、JPYC（Polygon）で買えるものを自律的に探して決済します。
+          </p>
+
+          <CopyBlock label="エージェント用プロンプト" text={agentPrompt} />
+
+          <p className="sub" style={{ margin: '24px 0 8px' }}>
+            あるいは list API を直接叩く（agent / ツールから）:
+          </p>
+          <CopyBlock label="エンドポイント" text={`curl ${apiUrl}`} />
+          <p style={{ marginTop: 14 }}>
+            <a className="btn outline" href="/api/services" target="_blank" rel="noopener">
+              /api/services を開く →
+            </a>
+          </p>
+        </section>
+
         <footer className="wrap">
           <div style={{ marginBottom: 12 }}>
+            <a href="/faq">FAQ</a>
             <a href={REGISTRY_REPO} target="_blank" rel="noopener">jp402-registry (台帳/標準)</a>
             <a href={REGISTER_URL} target="_blank" rel="noopener">登録</a>
           </div>

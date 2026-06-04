@@ -67,6 +67,9 @@ code { background: rgba(108,92,231,.08); border-radius: 6px; padding: 1px 6px; f
 
 /* hero */
 .hero { color: #fff; background: radial-gradient(1100px 460px at 72% -15%, var(--accent2) 0%, var(--accent) 42%, var(--accent-dark) 100%); }
+.hero.slim .in { padding-bottom: 36px; }
+.hero.slim h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); margin-bottom: 12px; }
+a.logo:hover { text-decoration: none; }
 .hero .in { max-width: 960px; margin: 0 auto; padding: 18px var(--sp-l) var(--sp-xxl); }
 .nav { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-m) 0; }
 .logo { font-weight: 800; font-size: 1.05rem; color: #fff; }
@@ -87,6 +90,18 @@ h1 .hl { background: linear-gradient(180deg, transparent 62%, rgba(255,226,122,.
 .btn.primary:hover { background: #f3f0ff; text-decoration: none; }
 .btn.ghost { background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.45); }
 .btn.ghost:hover { background: rgba(255,255,255,.2); text-decoration: none; }
+.btn.outline { background: var(--card); color: var(--accent); border: 1px solid var(--line); }
+.btn.outline:hover { border-color: var(--accent); background: #f7f5ff; text-decoration: none; }
+
+/* copy block（プロンプトのコピペUI） */
+.copyblock { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); box-shadow: var(--sh-1); }
+.copyhead { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #faf9ff; border-bottom: 1px solid var(--line); }
+.copylabel { font-size: .8rem; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.copybtn { border: 1px solid var(--accent); color: var(--accent); background: var(--card); border-radius: 8px;
+  padding: 6px 14px; font-size: .82rem; font-weight: 700; cursor: pointer; min-height: 36px; transition: .15s; }
+.copybtn:hover { background: var(--accent); color: #fff; }
+.copypre { margin: 0; padding: 16px; font-size: .82rem; line-height: 1.7; color: var(--fg);
+  white-space: pre-wrap; overflow-wrap: anywhere; background: var(--card); }
 
 /* sections */
 section { padding: clamp(48px, 7vw, 76px) 0; }
@@ -116,6 +131,18 @@ h2 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.4; letter-spacing: 
   .stats { grid-template-columns: repeat(2, 1fr); }
   .chartrow { justify-content: center; }
 }
+
+/* FAQ */
+.faqlist { display: grid; gap: var(--sp-m); }
+details.faq { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sh-1); overflow: hidden; }
+details.faq summary { cursor: pointer; list-style: none; padding: 18px var(--sp-l); font-weight: 700; font-size: 1.02rem;
+  display: flex; align-items: center; gap: 12px; font-feature-settings: 'palt' 1; }
+details.faq summary::-webkit-details-marker { display: none; }
+details.faq summary::before { content: '＋'; color: var(--accent); font-weight: 800; flex: none; transition: transform .2s; }
+details.faq[open] summary::before { content: '−'; }
+details.faq summary:hover { color: var(--accent); }
+.faq-a { padding: 0 var(--sp-l) 20px; color: var(--muted); line-height: 1.9; }
+.faq-a strong { color: var(--fg); }
 
 /* service list */
 .list { display: grid; gap: var(--sp-m); }
