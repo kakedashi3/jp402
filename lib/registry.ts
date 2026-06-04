@@ -2,6 +2,8 @@
 // DB は持たず、registry.json を真実の源とする（ハイブリッド設計：登録/標準は registry 側、
 // scan はそれを読んで見せる/探させる側）。
 
+import { safeFetch } from './safe-fetch';
+
 export const REGISTRY_URL =
   process.env.NEXT_PUBLIC_REGISTRY_URL ??
   'https://raw.githubusercontent.com/kakedashi3/jp402-registry/main/registry.json';
@@ -52,7 +54,8 @@ export async function confirm402(resource: string): Promise<boolean | null> {
   if (hit && hit.exp > Date.now()) return hit.ok;
   let ok: boolean | null = null;
   try {
-    const r = await fetch(resource, { redirect: 'follow' });
+    // SSRF ガード付き(private/loopback/metadata 宛てを拒否・リダイレクト再検証)
+    const r = await safeFetch(resource, { method: 'GET' });
     ok = r.status === 402;
   } catch {
     ok = null;
@@ -82,9 +85,10 @@ export function serviceId(resource: string): string {
   return Buffer.from(resource).toString('base64url');
 }
 
+// entry 由来 URL(permissionless)は SSRF ガード付きで取得。
 async function fetchJson(url: string): Promise<unknown | null> {
   try {
-    const r = await fetch(url, { next: { revalidate: REVALIDATE } });
+    const r = await safeFetch(url, { next: { revalidate: REVALIDATE } });
     if (!r.ok) return null;
     return await r.json();
   } catch {
