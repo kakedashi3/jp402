@@ -55,8 +55,12 @@ GET ${apiUrl}
 
 返ってきた services[] が、いま JPYC で買えるものの一覧です。
 その中から registered=true で trustScore の高いものを優先して選んでください。
-気になった service は resource を x402（HTTP 402）フローで取得し、
-payTo と price.raw（JPYC・18桁）を使って JPYC 決済すれば、取引完了です。
+気になった service は、bare な resource ではなく resourceTemplate を使ってください。
+これは parameters（例: id）の必須項目を {id} の形で埋めた「実際に払えるURL」です。
+（bare resource は無料インデックスや 404 を返すことがある＝それが live402:null の意味）
+埋めたURLを x402（HTTP 402）フローで取得し、返ってきた 402 の payTo と
+maxAmountRequired（JPYC・18桁）で JPYC 決済すれば、取引完了です。
+※ payTo・価格は最終真実 = その場の 402 応答。一覧の値は変わり得るので 402 を正とすること。
 invoice.registrationNumber があれば、適格請求書を出せる正規の発行元のしるし。
 
 さあ、最初の1件を見つけにいきましょう。`;
