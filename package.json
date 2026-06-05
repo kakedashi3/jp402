@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test:contract": "node tests/api-services.contract.mjs"
   },
   "dependencies": {
     "next": "^15.1.6",
