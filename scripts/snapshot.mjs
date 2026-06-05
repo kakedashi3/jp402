@@ -174,18 +174,24 @@ async function main() {
     s.accepts?.some(a => a.network === NET && a.asset?.toLowerCase() === JPYC),
   );
 
-  const stats = [];
+  // signals は payTo 単位。複数 op が同じ payTo を共有すると同じ着金を二重計上する
+  // ため、payTo で dedupe（1 ウォレット 1 回のみ計上）して経済 totals の水増しを防ぐ。
+  const byPayTo = new Map(); // payTo(lower) -> { label, ...sig, measured }
   for (const s of jpyc) {
     const accept = s.accepts.find(a => a.network === NET && a.asset?.toLowerCase() === JPYC);
+    const payTo = accept?.payTo;
+    if (!payTo) continue;
+    const key = String(payTo).toLowerCase();
+    if (byPayTo.has(key)) continue; // 同一ウォレットは初出のみ
     try {
-      const sig = await signalsFor(accept.payTo);
-      stats.push({ label: s.publisher, ...sig, measured: true });
+      const sig = await signalsFor(payTo);
+      byPayTo.set(key, { label: s.publisher, ...sig, measured: true });
     } catch {
-      stats.push({ label: s.publisher, txCount: 0, uniqueWallets: 0, volumeRaw: '0', measured: false });
+      byPayTo.set(key, { label: s.publisher, txCount: 0, uniqueWallets: 0, volumeRaw: '0', measured: false });
     }
   }
 
-  const measured = stats.filter(x => x.measured);
+  const measured = [...byPayTo.values()].filter(x => x.measured);
   const totalTx = measured.reduce((a, b) => a + b.txCount, 0);
   const totalVol = measured.reduce((a, b) => a + BigInt(b.volumeRaw || '0'), 0n);
 
