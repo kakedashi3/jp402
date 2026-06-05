@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-06-05T03:39:04.278Z",
+  "generatedAt": "2026-06-05T03:52:33.545Z",
   "chain": {
     "measured": true,
     "totalSupplyRaw": "2270695655323941529757760712",
-    "blockNumber": 87950506
+    "blockNumber": 87951046
   },
-  "serviceCount": 0,
-  "measuredCount": 0,
+  "serviceCount": 2,
+  "measuredCount": 2,
   "totalTx": 0,
   "totalVolumeRaw": "0",
   "perService": []
