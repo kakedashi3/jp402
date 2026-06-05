@@ -49,6 +49,10 @@ export interface ResolvedService extends Service {
   parameters?: Array<{ name: string; in: string; required: boolean }>;
   // サービス概要(openapi の operation summary / description)。一覧・詳細で表示。
   description?: string;
+  // HTTP メソッド(GET/POST 等)。x402scan 風の "METHOD path" 表示に使う。
+  method?: string;
+  // カテゴリ/タグ(openapi operation の tags)。
+  tags?: string[];
 }
 
 // runtime 402 確定: 具体 resource を叩いて 402 が返るか確認(5分キャッシュ)。

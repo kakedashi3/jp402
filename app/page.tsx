@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 
 import { fetchServices, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
 import { getEconomy } from '@/lib/snapshot';
-import { formatJpyc, formatYenCompact, shortAddr } from '@/lib/format';
+import { formatJpyc, formatYenCompact, resourcePath } from '@/lib/format';
 import { Donut, Legend, PALETTE, type Segment } from './_components/charts';
 import { CopyBlock } from './_components/CopyBlock';
 
@@ -185,15 +185,21 @@ invoice.registrationNumber があれば、適格請求書を出せる正規の�
                   a => a.network === POLYGON_NETWORK && a.asset?.toLowerCase() === JPYC_POLYGON,
                 );
                 const t = s['x-jp402']?.invoice?.registrationNumber;
+                const method = s.method ?? 'GET';
                 return (
                   <a key={s.id} className="svc" href={`/service/${s.id}`}>
-                    <div>
-                      <div className="name">{s.publisher}</div>
+                    <div className="svc-main">
+                      <div className="ep-head">
+                        <span className={`method method-${method.toLowerCase()}`}>{method}</span>
+                        <span className="path mono">{resourcePath(s.resource)}</span>
+                      </div>
+                      <div className="svc-sub">
+                        <span className="pub">{s.publisher}</span>
+                        {(s.tags ?? []).map(tag => <span key={tag} className="tag">{tag}</span>)}
+                        {t ? <span className="chip ok">適格請求書</span> : null}
+                      </div>
                       {s.description && <div className="desc">{s.description}</div>}
-                      <div className="res">{s.resource}</div>
                     </div>
-                    {t ? <span className="chip ok">T番号あり</span> : <span className="chip">免税/未登録</span>}
-                    <span className="chip mono">{shortAddr(accept?.payTo)}</span>
                     <span className="price">{formatJpyc(accept?.maxAmountRequired)}</span>
                   </a>
                 );

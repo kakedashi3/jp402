@@ -101,6 +101,9 @@ h1 .hl { background: linear-gradient(180deg, transparent 62%, rgba(255,226,122,.
 .copybtn { border: 1px solid var(--accent); color: var(--accent); background: var(--card); border-radius: 8px;
   padding: 6px 14px; font-size: .82rem; font-weight: 700; cursor: pointer; min-height: 36px; transition: .15s; }
 .copybtn:hover { background: var(--accent); color: #fff; }
+.copyinline { border: 1px solid var(--line); color: var(--accent); background: var(--card); border-radius: 7px;
+  padding: 2px 9px; font-size: .74rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: .15s; }
+.copyinline:hover { border-color: var(--accent); background: var(--accent); color: #fff; }
 .copypre { margin: 0; padding: 16px; font-size: .82rem; line-height: 1.7; color: var(--fg);
   white-space: pre-wrap; overflow-wrap: anywhere; background: var(--card); }
 
@@ -165,6 +168,23 @@ a.svc:hover { border-color: #d9d9ec; box-shadow: var(--sh-2); transform: transla
 .svc .desc { color: var(--fg); font-size: .9rem; line-height: 1.6; margin: 2px 0 4px; max-width: 60ch; }
 .svc .res { color: var(--muted); font-size: .85rem; font-family: var(--mono); word-break: break-all; }
 .svc .price { margin-left: auto; font-weight: 800; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* x402scan 風: METHOD path / publisher・tags / 説明 */
+.svc-main { flex: 1 1 auto; min-width: 0; }
+.ep-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.svc-sub { display: flex; align-items: center; gap: 6px 10px; flex-wrap: wrap; margin-top: 5px; }
+.svc-sub .pub { font-weight: 700; font-size: .9rem; color: var(--fg); }
+.method { font-family: var(--mono); font-size: .72rem; font-weight: 800; letter-spacing: .03em;
+  padding: 2px 8px; border-radius: 6px; background: #eef0f4; color: var(--muted); }
+.method-get { background: #e8f1fe; color: #2563b8; }
+.method-post { background: #eaf7ee; color: #1f8f4d; }
+.method-put, .method-patch { background: #fdf2e3; color: #b9791b; }
+.method-delete { background: #fdecec; color: #c33; }
+.path { font-family: var(--mono); font-weight: 600; font-size: .95rem; color: var(--fg); word-break: break-all; }
+.tag { font-size: .72rem; font-weight: 700; border-radius: 6px; padding: 2px 8px; background: #f3f1ff; color: var(--accent); white-space: nowrap; }
+.ep-head + .ep-meta, .ep-meta { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; margin: 8px 0; }
+.ep-meta .pub { font-weight: 700; }
+.ep-url { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 10px 0 4px; }
+.ep-url-text { font-size: .82rem; color: var(--muted); word-break: break-all; }
 .chip { font-size: .75rem; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--muted); white-space: nowrap; }
 .chip.ok { color: var(--success); border-color: #bfe6cf; background: #f1faf4; }
 .chip.warn { color: var(--warning); border-color: #f0e0bd; background: #fdf8ee; }

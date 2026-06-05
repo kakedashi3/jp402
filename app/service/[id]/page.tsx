@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 
 import { fetchServiceById, JPYC_POLYGON, POLYGON_NETWORK } from '@/lib/registry';
-import { formatJpyc, shortAddr } from '@/lib/format';
+import { formatJpyc, shortAddr, resourcePath, payableUrl, buyerPrompt } from '@/lib/format';
 import { getSignals } from '@/lib/signals';
+import { CopyButton } from '@/app/_components/CopyButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,13 +22,36 @@ export default async function ServiceDetail({
   const signals = accept?.payTo ? await getSignals(accept.payTo) : null;
   const inv = s['x-jp402']?.invoice;
 
+  const method = s.method ?? 'GET';
+  const payable = payableUrl(s.resource, s.parameters);
+  const prompt = buyerPrompt({
+    method,
+    url: payable,
+    priceJpyc: formatJpyc(accept?.maxAmountRequired),
+    payTo: accept?.payTo,
+    publisher: s.publisher,
+  });
+
   return (
     <main className="wrap" style={{ paddingTop: 32, paddingBottom: 64 }}>
       <p style={{ marginBottom: 8 }}><a href="/">← 一覧へ</a></p>
       <p className="kicker">リソース詳細</p>
-      <h2 style={{ marginBottom: 4 }}>{s.publisher}</h2>
-      {s.description && <p style={{ margin: '0 0 8px', lineHeight: 1.7 }}>{s.description}</p>}
-      <p className="res" style={{ wordBreak: 'break-all', color: 'var(--muted)' }}>{s.resource}</p>
+      <div className="ep-head">
+        <span className={`method method-${method.toLowerCase()}`}>{method}</span>
+        <span className="path mono">{resourcePath(s.resource)}</span>
+      </div>
+      <div className="ep-meta">
+        <span className="pub">{s.publisher}</span>
+        {(s.tags ?? []).map(t => <span key={t} className="tag">{t}</span>)}
+        {inv?.registrationNumber
+          ? <span className="chip ok">適格請求書あり</span>
+          : <span className="chip">免税/未登録</span>}
+      </div>
+      {s.description && <p style={{ margin: '8px 0', lineHeight: 1.7 }}>{s.description}</p>}
+      <div className="ep-url">
+        <span className="mono ep-url-text">{payable}</span>
+        <CopyButton text={prompt} title="エージェント用プロンプトをコピー" />
+      </div>
 
       <div className="list" style={{ marginTop: 24 }}>
         <div className="svc" style={{ display: 'block' }}>

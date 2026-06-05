@@ -107,6 +107,10 @@ export function parseOpenApi(doc: any, sourceUrl: string): ResolvedService[] {
         (typeof doc.info?.description === 'string' && doc.info.description) ||
         undefined;
 
+      const tags = Array.isArray(op.tags)
+        ? op.tags.filter((t: unknown): t is string => typeof t === 'string')
+        : undefined;
+
       out.push({
         resource,
         accepts: [accept],
@@ -114,6 +118,8 @@ export function parseOpenApi(doc: any, sourceUrl: string): ResolvedService[] {
         probeable,
         parameters,
         description,
+        method: method.toUpperCase(),
+        tags,
         publisher,
         catalogUrl: sourceUrl,
         id: serviceId(resource),
