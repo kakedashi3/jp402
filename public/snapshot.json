@@ -1,13 +1,24 @@
 {
-  "generatedAt": "2026-06-05T03:52:33.545Z",
+  "generatedAt": "2026-06-05T04:42:49.250Z",
   "chain": {
     "measured": true,
     "totalSupplyRaw": "2270695655323941529757760712",
-    "blockNumber": 87951046
+    "blockNumber": 87953056
   },
   "serviceCount": 2,
   "measuredCount": 2,
-  "totalTx": 0,
-  "totalVolumeRaw": "0",
-  "perService": []
+  "totalTx": 2,
+  "totalVolumeRaw": "10000000000000000000",
+  "perService": [
+    {
+      "label": "AI×Web3週報",
+      "txCount": 1,
+      "volumeRaw": "5000000000000000000"
+    },
+    {
+      "label": "AI×Web3週報",
+      "txCount": 1,
+      "volumeRaw": "5000000000000000000"
+    }
+  ]
 }
