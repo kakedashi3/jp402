@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node tests/api-services.contract.mjs && node tests/declaration-runtime.contract.mjs && node tests/infra-health.contract.mjs && node tests/trust-signals.contract.mjs && node tests/scanner-ui.contract.mjs",
+    "test": "node tests/api-services.contract.mjs && node tests/declaration-runtime.contract.mjs && node tests/infra-health.contract.mjs && node tests/trust-signals.contract.mjs && node tests/scanner-ui.contract.mjs && node tests/automation-config.contract.mjs && node tests/buyer-loop.contract.mjs",
     "test:contract": "node tests/api-services.contract.mjs"
   },
   "dependencies": {
