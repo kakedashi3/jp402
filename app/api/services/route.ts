@@ -18,6 +18,19 @@ export function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS });
 }
 
+// 課金 resource を実際に叩ける形に組み立てたテンプレ。必須 query param を ?name={name} で付す。
+// 例: https://shop/api/article + [id] → https://shop/api/article?id={id}
+// (bare resource は無料インデックス等を返すことがあるため、buyer はこちらを使う)
+function buildResourceTemplate(
+  resource: string,
+  params?: Array<{ name: string; in: string; required: boolean }>,
+): string {
+  const q = (params ?? []).filter(p => p.in === 'query' && p.required);
+  if (q.length === 0) return resource;
+  const sep = resource.includes('?') ? '&' : '?';
+  return resource + sep + q.map(p => `${p.name}={${p.name}}`).join('&');
+}
+
 function rawToJpyc(raw?: string | null): string | null {
   if (!raw) return null;
   try {
@@ -60,6 +73,9 @@ export async function GET() {
         id: s.id,
         publisher: s.publisher,
         resource: s.resource,
+        // bare resource は無料/別応答のことがある。必須 param を埋めた実際に払える形:
+        resourceTemplate: buildResourceTemplate(s.resource, s.parameters),
+        parameters: s.parameters ?? [],
         chain: POLYGON_NETWORK,
         scheme: accept?.scheme ?? null,
         payTo: accept?.payTo ?? null,

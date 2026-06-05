@@ -88,15 +88,24 @@ export function parseOpenApi(doc: any, sourceUrl: string): ResolvedService[] {
       const invoice = opJp.invoice ?? (infoJp as { invoice?: Invoice }).invoice;
 
       // 具体 resource か(テンプレート or 必須パラメータ有りは probe 不可 = 宣言ベース)
-      const params = [...((ops as { parameters?: { required?: boolean }[] }).parameters ?? []), ...((op as { parameters?: { required?: boolean }[] }).parameters ?? [])];
-      const hasRequiredParam = params.some(p => p?.required);
+      type OAParam = { name?: string; in?: string; required?: boolean };
+      const rawParams: OAParam[] = [
+        ...((ops as { parameters?: OAParam[] }).parameters ?? []),
+        ...((op as { parameters?: OAParam[] }).parameters ?? []),
+      ];
+      const hasRequiredParam = rawParams.some(p => p?.required);
       const probeable = !/\{[^}]+\}/.test(resource) && !hasRequiredParam;
+      // buyer がURLを組み立てるためのパラメータヒント(name/in/required)。
+      const parameters = rawParams
+        .filter(p => p?.name)
+        .map(p => ({ name: String(p.name), in: p.in ?? 'query', required: !!p.required }));
 
       out.push({
         resource,
         accepts: [accept],
         'x-jp402': { currency: (infoJp as { currency?: string }).currency ?? 'JPYC', invoice },
         probeable,
+        parameters,
         publisher,
         catalogUrl: sourceUrl,
         id: serviceId(resource),

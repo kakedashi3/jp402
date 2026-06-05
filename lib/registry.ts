@@ -44,6 +44,9 @@ export interface ResolvedService extends Service {
   // 具体 resource(必須パラメータ無し・非テンプレート)= live 402 probe 可能か。
   // false の場合は宣言ベース(最終真実は purchase 時の runtime 402)。
   probeable?: boolean;
+  // 課金 resource を叩くのに必要なパラメータ(buyer がURLを組み立てるためのヒント)。
+  // 例: /api/article は ?id= が必須。bare URL は無料/別応答のことがある。
+  parameters?: Array<{ name: string; in: string; required: boolean }>;
 }
 
 // runtime 402 確定: 具体 resource を叩いて 402 が返るか確認(5分キャッシュ)。
