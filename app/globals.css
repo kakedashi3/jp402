@@ -162,6 +162,7 @@ details.faq summary:hover { color: var(--accent); }
   border: 1px solid var(--line); border-radius: 14px; padding: 18px var(--sp-l); box-shadow: var(--sh-1); transition: .15s; }
 a.svc:hover { border-color: #d9d9ec; box-shadow: var(--sh-2); transform: translateY(-2px); text-decoration: none; }
 .svc .name { font-weight: 700; font-size: 1.02rem; }
+.svc .desc { color: var(--fg); font-size: .9rem; line-height: 1.6; margin: 2px 0 4px; max-width: 60ch; }
 .svc .res { color: var(--muted); font-size: .85rem; font-family: var(--mono); word-break: break-all; }
 .svc .price { margin-left: auto; font-weight: 800; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .chip { font-size: .75rem; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--muted); white-space: nowrap; }

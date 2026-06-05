@@ -47,6 +47,8 @@ export interface ResolvedService extends Service {
   // 課金 resource を叩くのに必要なパラメータ(buyer がURLを組み立てるためのヒント)。
   // 例: /api/article は ?id= が必須。bare URL は無料/別応答のことがある。
   parameters?: Array<{ name: string; in: string; required: boolean }>;
+  // サービス概要(openapi の operation summary / description)。一覧・詳細で表示。
+  description?: string;
 }
 
 // runtime 402 確定: 具体 resource を叩いて 402 が返るか確認(5分キャッシュ)。

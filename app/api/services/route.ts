@@ -72,6 +72,7 @@ export async function GET() {
       return {
         id: s.id,
         publisher: s.publisher,
+        description: s.description ?? null,
         resource: s.resource,
         // bare resource は無料/別応答のことがある。必須 param を埋めた実際に払える形:
         resourceTemplate: buildResourceTemplate(s.resource, s.parameters),

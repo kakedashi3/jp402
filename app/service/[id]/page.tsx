@@ -26,6 +26,7 @@ export default async function ServiceDetail({
       <p style={{ marginBottom: 8 }}><a href="/">← 一覧へ</a></p>
       <p className="kicker">リソース詳細</p>
       <h2 style={{ marginBottom: 4 }}>{s.publisher}</h2>
+      {s.description && <p style={{ margin: '0 0 8px', lineHeight: 1.7 }}>{s.description}</p>}
       <p className="res" style={{ wordBreak: 'break-all', color: 'var(--muted)' }}>{s.resource}</p>
 
       <div className="list" style={{ marginTop: 24 }}>

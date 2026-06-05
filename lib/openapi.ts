@@ -100,12 +100,20 @@ export function parseOpenApi(doc: any, sourceUrl: string): ResolvedService[] {
         .filter(p => p?.name)
         .map(p => ({ name: String(p.name), in: p.in ?? 'query', required: !!p.required }));
 
+      // 概要: operation の summary > description > info.description の順で拾う。
+      const description =
+        (typeof op.summary === 'string' && op.summary) ||
+        (typeof op.description === 'string' && op.description) ||
+        (typeof doc.info?.description === 'string' && doc.info.description) ||
+        undefined;
+
       out.push({
         resource,
         accepts: [accept],
         'x-jp402': { currency: (infoJp as { currency?: string }).currency ?? 'JPYC', invoice },
         probeable,
         parameters,
+        description,
         publisher,
         catalogUrl: sourceUrl,
         id: serviceId(resource),
