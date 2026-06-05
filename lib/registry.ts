@@ -5,7 +5,8 @@
 import { safeFetch } from './safe-fetch';
 
 export const REGISTRY_URL =
-  process.env.NEXT_PUBLIC_REGISTRY_URL ??
+  // 空文字の env でも default に落ちるよう ?? でなく ||（snapshot.mjs と統一）
+  process.env.NEXT_PUBLIC_REGISTRY_URL ||
   'https://raw.githubusercontent.com/kakedashi3/jp402-registry/main/registry.json';
 
 // JPYC on Polygon（MVP 対象トークン・decimals 18）
