@@ -9,6 +9,7 @@ export function Footer() {
     <footer className="wrap">
       <div className="footlinks">
         <a href="/">ホーム</a>
+        <a href="/x402">x402とは</a>
         <a href="/faq">FAQ</a>
         <a href={REGISTRY_REPO} target="_blank" rel="noopener">
           jp402-registry（台帳/標準）

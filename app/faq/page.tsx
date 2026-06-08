@@ -233,6 +233,7 @@ export default function FaqPage() {
             </a>
             <div>
               <a href="/">ホーム</a>
+              <a href="/x402">x402とは</a>
               <a href={REGISTRY_REPO} target="_blank" rel="noopener">GitHub</a>
             </div>
           </nav>
