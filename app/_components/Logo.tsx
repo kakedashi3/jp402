@@ -13,10 +13,9 @@ export function Logo({ href = '/' }: { href?: string | null }) {
         <text x="92" y="44" textAnchor="end">jp4</text>
         <text x="132" y="44" textAnchor="start">2</text>
       </g>
-      <g transform="translate(112 29)" fill="none" stroke="#ffffff">
-        <circle r="14" strokeWidth="4" />
-        <circle r="7.5" strokeWidth="2.5" />
-        <circle r="3.5" fill="#ffe27a" stroke="none" />
+      <g transform="translate(112 29)">
+        <circle r="15" fill="none" stroke="#ffffff" strokeWidth="4.5" />
+        <circle r="6" fill="#ffe27a" />
       </g>
     </svg>
   );

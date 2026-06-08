@@ -75,7 +75,7 @@ a.logo:hover { text-decoration: none; }
 .nav { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-m) 0; }
 .logo { font-weight: 800; font-size: 1.05rem; color: #fff; display: inline-flex; align-items: center; }
 .logo .dot { color: #ffe27a; }
-.logo-svg { height: 26px; width: auto; display: block; }
+.logo-svg { height: 30px; width: auto; display: block; }
 .nav a { color: #fff; opacity: .92; margin-left: 18px; font-size: .9rem; }
 .eyebrow { display: inline-block; font-size: .76rem; letter-spacing: .14em; text-transform: uppercase;
   font-feature-settings: 'palt' 1;

@@ -5,9 +5,8 @@
     <text x="92" y="44" text-anchor="end" fill="#6c5ce7">jp4</text>
     <text x="132" y="44" text-anchor="start" fill="#6c5ce7">2</text>
   </g>
-  <g transform="translate(112 29)" fill="none" stroke="#6c5ce7">
-    <circle r="14" stroke-width="4"/>
-    <circle r="7.5" stroke-width="2.5"/>
-    <circle r="3.5" fill="#4b3fb0" stroke="none"/>
+  <g transform="translate(112 29)">
+    <circle r="15" fill="none" stroke="#6c5ce7" stroke-width="4.5"/>
+    <circle r="6" fill="#4b3fb0"/>
   </g>
 </svg>
