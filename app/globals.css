@@ -91,6 +91,11 @@ h1 { font-size: clamp(1.8rem, 5vw, 2.9rem); line-height: 1.3; letter-spacing: 0;
 h1 .hl { background: linear-gradient(180deg, transparent 62%, rgba(255,226,122,.55) 62%);
   -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .06em; }
 .lede { font-size: clamp(1rem, 2.3vw, 1.12rem); line-height: 1.9; max-width: 620px; color: rgba(255,255,255,.94); margin: 0 0 28px; }
+/* トップのヒーローのみ中央揃え（nav は通常レイアウトのまま） */
+.hero-center .in { text-align: center; }
+.hero-center .nav { text-align: left; }
+.hero-center .lede { margin-left: auto; margin-right: auto; }
+.hero-center .heroterm { margin-left: auto; margin-right: auto; }
 .btn { display: inline-flex; align-items: center; gap: var(--sp-s); border: 0; border-radius: 10px; padding: 12px var(--sp-l);
   font-size: .95rem; font-weight: 700; cursor: pointer; min-height: 44px; /* §8 タッチターゲット */ transition: .15s; }
 .btn.primary { background: #fff; color: var(--accent); }
