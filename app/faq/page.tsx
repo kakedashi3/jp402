@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { Logo } from '@/app/_components/Logo';
+
 export const metadata: Metadata = {
   title: 'よくある質問（FAQ）',
   description:
@@ -228,9 +230,7 @@ export default function FaqPage() {
       <header className="hero slim">
         <div className="in">
           <nav className="nav">
-            <a className="logo" href="/">
-              jp402<span className="dot">.</span>
-            </a>
+            <Logo />
             <div>
               <a href="/">ホーム</a>
               <a href="/x402">x402とは</a>

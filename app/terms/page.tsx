@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { Logo } from '@/app/_components/Logo';
+
 export const metadata: Metadata = {
   title: '利用規約',
   description:
@@ -16,9 +18,7 @@ export default function TermsPage() {
       <header className="hero slim">
         <div className="in">
           <nav className="nav">
-            <a className="logo" href="/">
-              jp402<span className="dot">.</span>
-            </a>
+            <Logo />
             <div>
               <a href="/">ホーム</a>
               <a href="/faq">FAQ</a>

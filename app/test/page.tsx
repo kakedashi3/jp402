@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { TestClient } from './TestClient';
+import { Logo } from '@/app/_components/Logo';
 
 export const metadata: Metadata = {
   title: 'API をテスト',
@@ -16,9 +17,7 @@ export default function TestPage() {
       <header className="hero slim">
         <div className="in">
           <nav className="nav">
-            <a className="logo" href="/">
-              jp402<span className="dot">.</span>
-            </a>
+            <Logo />
             <div>
               <a href="/">ホーム</a>
               <a href="/faq">FAQ</a>
