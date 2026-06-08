@@ -319,6 +319,9 @@ export default function UseCasesPage() {
               <strong>② 有料の操作で 402 を返すようにする</strong> —
               「いくら・どのアドレス（payTo）へ・どの通貨で」を 402 で提示します。
               JPYC（Polygon）建てなら、買い手はガス不要の署名で支払えます。
+              チェーン処理を自前で実装したくなければ、JPYC 専用 facilitator{' '}
+              <a href="https://dashboard.yen402.com/" target="_blank" rel="noopener">yen402</a>{' '}
+              に署名検証・決済を任せられます（下の「実際に試す」参照）。
             </li>
             <li>
               <strong>③ jp402-registry に 1 行 PR で載る</strong> —
@@ -337,8 +340,8 @@ export default function UseCasesPage() {
           <h2>実際に試す — JPYC で動く現場</h2>
           <p>
             上のカタログは USDC 中心の x402/MPP 事例でしたが、
-            <strong>JPYC で「買う通貨を手に入れる → 売り場を見る → エージェントに買わせる」</strong>
-            を実際に触れる場所を 3 つ挙げます。
+            <strong>JPYC で「買う通貨を手に入れる → 売り場を見る → エージェントに買わせる」、
+            そして自分が売り手として 402 を返す</strong>まで、実際に触れる場所を挙げます。
           </p>
           <div style={cardGrid}>
             {[
@@ -369,6 +372,15 @@ export default function UseCasesPage() {
                 desc:
                   '自然言語で命じると JPYC / USDC を自律決済する AI エージェント決済 CLI。「JPYC で米 5kg 買って」で、意図解析 → 商品マッチ → 決済署名 → 注文完了まで実行。x402 + MPP 対応・ローカル鍵。インストールは npm i -g @komlock_lab/kova。',
               },
+              {
+                name: 'yen402',
+                badge: 'kakedashi3 個人 OSS・facilitator',
+                badgeClass: '',
+                href: 'https://dashboard.yen402.com/',
+                role: '自分のサービスを 402 化する',
+                desc:
+                  'jp402 と同じ作者（kakedashi3）が用意する、JPYC（Polygon）専用の x402 facilitator。自分の API/コンテンツで 402 を返すとき、チェーン処理を自前実装せず署名検証・JPYC 決済をこの facilitator に任せられる。x402 標準準拠で x402-fetch 等の既存 SDK がそのまま使え、API キーを発行して 402 を返すだけで JPYC 課金を開始。ダッシュボードで着金・取引を可視化。Polygon mainnet 稼働中。',
+              },
             ].map(r => (
               <a
                 key={r.name}
@@ -390,7 +402,8 @@ export default function UseCasesPage() {
           </div>
           <p className="footnote" style={{ fontSize: '.8rem', color: 'var(--muted)' }}>
             ※ JPYC EX は JPYC 株式会社の公式サービス。JPYC EC（ec.jpyc-service.com）と kova は
-            それぞれ独立した第三者プロジェクトで、jp402・JPYC 株式会社とは運営主体が異なります。
+            独立した第三者プロジェクトです。yen402 は jp402 と同じ作者（kakedashi3）による姉妹プロジェクト（facilitator 層）で、
+            いずれも JPYC 株式会社による公式コンテンツではありません。
           </p>
         </section>
 
