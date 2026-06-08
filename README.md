@@ -65,3 +65,5 @@ env:
 
 - [jp402-registry](https://github.com/kakedashi3/jp402-registry) — 準拠カタログ＋台帳＋PRゲート（標準/登録側）
 - jp402-scan（x402scan fork・private）— 参照仕様。本リポジトリの設計お手本（実装ベースには非採用）
+
+<!-- ci: auto-deploy 接続確認 2026-06-08 -->
