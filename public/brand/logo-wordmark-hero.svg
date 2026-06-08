@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 64" width="180" height="64" role="img" aria-label="jp402">
+  <!-- Variant 1【最重要】紫ヘッダー(#6c5ce7)用: 白字 + ◎白環 + 黄芯(発見のスパーク)。背景は透過。 -->
+  <!-- ◎ は 0 の位置。スポーク無し=脱・歯車。同心2環(レーダーリップル)+中心の芯。 -->
+  <g font-family="system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif" font-weight="800" font-size="40">
+    <text x="92" y="44" text-anchor="end" fill="#ffffff">jp4</text>
+    <text x="132" y="44" text-anchor="start" fill="#ffffff">2</text>
+  </g>
+  <g transform="translate(112 29)" fill="none" stroke="#ffffff">
+    <circle r="14" stroke-width="4"/>
+    <circle r="7.5" stroke-width="2.5"/>
+    <circle r="3.5" fill="#ffe27a" stroke="none"/>
+  </g>
+</svg>

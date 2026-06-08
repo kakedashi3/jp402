@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="jp402 mark">
+  <!-- 単体マーク(◎ のみ): currentColor で着色。インライン<svg>や任意色での再利用に。 -->
+  <!-- スポーク無し=脱・歯車。同心2環(レーダーリップル)+中心の芯=「402という発見の合図に集まる(収斂)」。 -->
+  <g transform="translate(16 16)" fill="none" stroke="currentColor">
+    <circle r="13" stroke-width="3"/>
+    <circle r="7" stroke-width="2"/>
+    <circle r="3" fill="currentColor" stroke="none"/>
+  </g>
+</svg>

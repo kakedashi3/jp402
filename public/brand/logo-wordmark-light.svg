@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 64" width="180" height="64" role="img" aria-label="jp402">
+  <!-- Variant 2 白/薄グレー背景用: ブランド紫のワントーン。黄は使わない(白地で黄は沈むため)。 -->
+  <!-- 視認性と記号性のため芯のみ濃紫(#4b3fb0)で締める。 -->
+  <g font-family="system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif" font-weight="800" font-size="40">
+    <text x="92" y="44" text-anchor="end" fill="#6c5ce7">jp4</text>
+    <text x="132" y="44" text-anchor="start" fill="#6c5ce7">2</text>
+  </g>
+  <g transform="translate(112 29)" fill="none" stroke="#6c5ce7">
+    <circle r="14" stroke-width="4"/>
+    <circle r="7.5" stroke-width="2.5"/>
+    <circle r="3.5" fill="#4b3fb0" stroke="none"/>
+  </g>
+</svg>
