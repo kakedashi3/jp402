@@ -46,7 +46,7 @@ body {
   /* §3.3 和文優先のフォールバックチェーン */
   font-family: var(--sans);
   /* §3.5 日本語本文は line-height 1.7〜2.0 / letter-spacing 0.02〜0.04em */
-  line-height: 1.8;
+  line-height: 1.95;
   letter-spacing: .02em;
   /* §3.6 禁則 + 折り返し */
   word-break: keep-all;     /* CJK の語中改行を防ぐ（「掲載台帳」が 掲|載 で割れない） */
