@@ -23,10 +23,17 @@ app/
   globals.css         デザイントークン(accent #6c5ce7 / 和文タイポ)
   page.tsx            ホーム: registry を読み JPYC リソース一覧 / 空状態
   service/[id]/page.tsx  詳細 + 信頼シグナル表示
+  faq/page.tsx        よくある質問(全般/売り手/買い手)
+  api/services/route.ts  買い手エージェント向け list API(JPYC フィルタ→signals→trust ランク)
+  api/resolve/route.ts   登録前テスト用の単発 origin 解決(同一ホスト限定 probe)
 lib/
-  registry.ts         registry.json → 各 catalog → services 解決
-  format.ts           JPYC(18桁) 表示・アドレス短縮
-  signals.ts          信頼シグナル(Alchemy/paylog 走査) ※P5 でスタブ→実装
+  registry.ts         registry.json → openapi/catalog → services 解決
+  openapi.ts          OpenAPI(x402scan spec) → 有料 operation パーサ
+  signals.ts          信頼シグナル(Alchemy alchemy_getAssetTransfers 実測・5分キャッシュ)
+  safe-fetch.ts       permissionless URL 用 SSRF ガード + サイズ上限 fetch
+  format.ts           JPYC(18桁) 表示・rawToJpyc・payableUrl・アドレス短縮
+scripts/
+  snapshot.mjs        週次/dispatch で economy snapshot 生成(CI 用パーサミラー)
 ```
 
 ## 開発
@@ -40,15 +47,19 @@ pnpm build
 
 env:
 - `NEXT_PUBLIC_REGISTRY_URL` — registry.json の取得元（既定 = jp402-registry main raw）
-- `ALCHEMY_POLYGON_URL` — 任意。設定すると信頼シグナル（JPYC 着金実測）を有効化（P5 で実装）
+- `ALCHEMY_POLYGON_URL` — 任意。設定すると信頼シグナル（JPYC 着金実測）を有効化
 
 ## ロードマップ
 
-- [ ] **P5 信頼シグナル実装**：`alchemy_getAssetTransfers` で payTo への JPYC 着金を走査 → txCount/uniqueWallets/volume（paylog 連携も）
-- [ ] 検索・フィルタ（chain/price/T番号）
+実装済み:
+- [x] **信頼シグナル**：`alchemy_getAssetTransfers` で payTo への JPYC 着金を走査 → txCount/uniqueWallets/volume（`lib/signals.ts`）
+- [x] 買い手エージェント向け JSON API（`/api/services`）
+- [x] Vercel デプロイ（`https://jp402.com`・CLI 直デプロイ、registry 更新 dispatch → snapshot 再生成 → 自動 deploy）
+
+未実装:
+- [ ] 検索・フィルタ（chain/price/T番号）をサーバ側で（現状は consumer 側で絞る）
+- [ ] T番号の実在検証（`verified`）= 国税庁 適格請求書 Web-API（未申請のため当面 `false` 固定）
 - [ ] 登録 probe を `@agentcash/discovery` で内製（今は jp402-registry の register ページへ送客）
-- [ ] 買い手エージェント向け JSON API（`/api/services`）
-- [ ] Vercel デプロイ
 
 ## 関連
 

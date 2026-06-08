@@ -80,7 +80,7 @@ export default async function ServiceDetail({
             </>
           ) : (
             <p style={{ color: 'var(--muted)', margin: 0 }}>
-              未計測（ALCHEMY_POLYGON_URL 設定後に JPYC 着金実績を表示。P5 で実装）。
+              未計測（この環境では ALCHEMY_POLYGON_URL 未設定。本番では JPYC 着金実績を表示）。
               ゼロ実績は隠さず明示する方針。
             </p>
           )}

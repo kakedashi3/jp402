@@ -2,16 +2,20 @@
 // DB は持たず、registry.json を真実の源とする（ハイブリッド設計：登録/標準は registry 側、
 // scan はそれを読んで見せる/探させる側）。
 
-import { safeFetch } from './safe-fetch';
+import { safeFetch, safeFetchJson } from './safe-fetch';
 
 export const REGISTRY_URL =
   // 空文字の env でも default に落ちるよう ?? でなく ||（snapshot.mjs と統一）
   process.env.NEXT_PUBLIC_REGISTRY_URL ||
   'https://raw.githubusercontent.com/kakedashi3/jp402-registry/main/registry.json';
 
-// JPYC on Polygon（MVP 対象トークン・decimals 18）
+// JPYC on Polygon（MVP 対象トークン・decimals 18）。
+// このアドレス/decimals は固定値。買い手フルループ実 tx (0xce45f3… / 5 JPYC、
+// tests/buyer-loop.contract.mjs)でオンチェーン検証済み。JPYC は全チェーン同一アドレス
+// （決定論デプロイ）で Polygon も例外でない。変更時は tests/constants.unit.mjs が検知する。
 export const JPYC_POLYGON = '0xe7c3d8c9a439fede00d2600032d5db0be71c3c29';
 export const POLYGON_NETWORK = 'eip155:137';
+export const JPYC_DECIMALS = 18;
 
 export interface Accept {
   scheme: string;
@@ -95,12 +99,10 @@ export function serviceId(resource: string): string {
   return Buffer.from(resource).toString('base64url');
 }
 
-// entry 由来 URL(permissionless)は SSRF ガード付きで取得。
+// entry 由来 URL(permissionless)は SSRF ガード + サイズ上限つきで取得（巨大 JSON OOM 防止）。
 async function fetchJson(url: string): Promise<unknown | null> {
   try {
-    const r = await safeFetch(url, { next: { revalidate: REVALIDATE } });
-    if (!r.ok) return null;
-    return await r.json();
+    return await safeFetchJson(url, { next: { revalidate: REVALIDATE } });
   } catch {
     return null;
   }

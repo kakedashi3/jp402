@@ -9,11 +9,28 @@ export function formatJpyc(raw?: string): string {
     let fracStr = '';
     if (frac !== 0n) {
       const padded = frac.toString().padStart(18, '0').replace(/0+$/, '');
-      fracStr = '.' + padded.slice(0, 2);
+      const two = padded.slice(0, 2);
+      // 0.01 未満は 2 桁表示だと "0.00" になり実額が消える → 潰さず明示する。
+      if (int === 0n && two === '00') return '¥<0.01 JPYC';
+      fracStr = '.' + two;
     }
     return `¥${int.toLocaleString('ja-JP')}${fracStr} JPYC`;
   } catch {
     return raw;
+  }
+}
+
+// API 用: 18dec raw → JPYC 建ての数値文字列（"5" / "0.5"）。表示桁を 2 桁に切り詰めるため
+// 0.01 未満は lossy（"0.00" に潰れる）。買い手は price.raw（最小単位）を正とすること。
+export function rawToJpyc(raw?: string | null): string | null {
+  if (!raw) return null;
+  try {
+    const v = BigInt(raw);
+    const d = 10n ** 18n;
+    const frac = (v % d).toString().padStart(18, '0').replace(/0+$/, '').slice(0, 2);
+    return `${(v / d).toString()}${frac ? '.' + frac : ''}`;
+  } catch {
+    return null;
   }
 }
 

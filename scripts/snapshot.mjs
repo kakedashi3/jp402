@@ -30,7 +30,10 @@ async function rpc(method, params) {
   return j.result;
 }
 
-// lib/registry.ts / lib/openapi.ts と同じ多形式 reader を CI 用にミラー。
+// ⚠️ lib/registry.ts / lib/openapi.ts と同じ多形式 reader を CI(.mjs)用にミラー。
+// .ts を直接 import できない CI 都合の二重実装。parseOpenApi / jpycToRaw / network 判定の
+// ロジックを片方だけ直すと UI と snapshot の金額/対象がズレる → 必ず両方を更新すること。
+// 定数(JPYC/NET/decimals)の drift は tests/constants.unit.mjs が検知する。
 async function fetchJson(url) {
   try {
     const r = await fetch(url);
