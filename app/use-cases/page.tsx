@@ -332,6 +332,68 @@ export default function UseCasesPage() {
           </p>
         </section>
 
+        {/* 実際に試す・関連リンク（JPYC で動く現場） */}
+        <section>
+          <h2>実際に試す — JPYC で動く現場</h2>
+          <p>
+            上のカタログは USDC 中心の x402/MPP 事例でしたが、
+            <strong>JPYC で「買う通貨を手に入れる → 売り場を見る → エージェントに買わせる」</strong>
+            を実際に触れる場所を 3 つ挙げます。
+          </p>
+          <div style={cardGrid}>
+            {[
+              {
+                name: 'JPYC EX',
+                badge: 'JPYC株式会社・公式',
+                badgeClass: 'ok',
+                href: 'https://jpyc.co.jp/',
+                role: 'まず通貨を手に入れる',
+                desc:
+                  '日本円ステーブルコイン JPYC の発行・償還プラットフォーム。銀行振込で JPYC を入手でき（最低 ¥3,000）、日本円への償還もここから。x402 で支払う JPYC は、まずここで手に入れます。',
+              },
+              {
+                name: 'JPYC EC ショップ',
+                badge: '有志運営（非公式）',
+                badgeClass: 'warn',
+                href: 'https://ec.jpyc-service.com/',
+                role: '売り手の実例を見る',
+                desc:
+                  'JPYC × x402 で実物（米・食品など）を売る独立系 EC（mameta_zk 運営・約 26 店舗）。AI エージェントが JPYC で実際に購入できる、数少ない “現場”。本ページの物販カテゴリーの実例そのものです。※ JPYC 公式ではない有志プロジェクト。',
+              },
+              {
+                name: 'kova',
+                badge: 'Komlock Lab・買い手 CLI',
+                badgeClass: '',
+                href: 'https://kova-agent.com/',
+                role: 'エージェントに買わせる',
+                desc:
+                  '自然言語で命じると JPYC / USDC を自律決済する AI エージェント決済 CLI。「JPYC で米 5kg 買って」で、意図解析 → 商品マッチ → 決済署名 → 注文完了まで実行。x402 + MPP 対応・ローカル鍵。インストールは npm i -g @komlock_lab/kova。',
+              },
+            ].map(r => (
+              <a
+                key={r.name}
+                href={r.href}
+                target="_blank"
+                rel="noopener"
+                style={{ ...card, display: 'block', textDecoration: 'none', color: 'inherit' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                  <span style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--ink)' }}>{r.name}</span>
+                  <span className={`chip ${r.badgeClass}`}>{r.badge}</span>
+                </div>
+                <div className="mono" style={{ fontSize: '.72rem', color: 'var(--accent)', marginBottom: 8 }}>
+                  {r.role} ↗
+                </div>
+                <p style={{ fontSize: '.86rem', margin: 0, color: 'var(--fg)', lineHeight: 1.65 }}>{r.desc}</p>
+              </a>
+            ))}
+          </div>
+          <p className="footnote" style={{ fontSize: '.8rem', color: 'var(--muted)' }}>
+            ※ JPYC EX は JPYC 株式会社の公式サービス。JPYC EC（ec.jpyc-service.com）と kova は
+            それぞれ独立した第三者プロジェクトで、jp402・JPYC 株式会社とは運営主体が異なります。
+          </p>
+        </section>
+
         <p style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <a className="btn primary" href={REGISTER_URL} target="_blank" rel="noopener">
             売り手として登録する →
