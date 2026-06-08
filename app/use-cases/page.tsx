@@ -209,10 +209,10 @@ export default function UseCasesPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.92rem' }}>
               <thead>
                 <tr style={{ background: 'var(--bg)' }}>
-                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid var(--line)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--sp-m) var(--sp-l)', borderBottom: '1px solid var(--line)' }}>
                     持っているもの
                   </th>
-                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid var(--line)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--sp-m) var(--sp-l)', borderBottom: '1px solid var(--line)' }}>
                     売れる形
                   </th>
                 </tr>
@@ -220,10 +220,10 @@ export default function UseCasesPage() {
               <tbody>
                 {MAPPING.map((m, i) => (
                   <tr key={i}>
-                    <td style={{ padding: '11px 16px', borderBottom: i < MAPPING.length - 1 ? '1px solid var(--line)' : 'none', color: 'var(--fg)' }}>
+                    <td style={{ padding: 'var(--sp-m) var(--sp-l)', borderBottom: i < MAPPING.length - 1 ? '1px solid var(--line)' : 'none', color: 'var(--fg)' }}>
                       {m.have}
                     </td>
-                    <td style={{ padding: '11px 16px', borderBottom: i < MAPPING.length - 1 ? '1px solid var(--line)' : 'none', fontWeight: 700, color: 'var(--accent-dark)' }}>
+                    <td style={{ padding: 'var(--sp-m) var(--sp-l)', borderBottom: i < MAPPING.length - 1 ? '1px solid var(--line)' : 'none', fontWeight: 700, color: 'var(--accent-dark)' }}>
                       {m.sell}
                     </td>
                   </tr>
@@ -246,8 +246,8 @@ export default function UseCasesPage() {
               background: 'var(--bg)',
               border: '1px solid var(--line)',
               borderLeft: '3px solid var(--accent)',
-              borderRadius: 8,
-              padding: '12px 16px',
+              borderRadius: 10,
+              padding: 'var(--sp-m) var(--sp-l)',
               fontSize: '.88rem',
               color: 'var(--fg)',
               margin: '0 0 var(--sp-l)',
@@ -262,7 +262,7 @@ export default function UseCasesPage() {
           <div style={cardGrid}>
             {CATEGORIES.map(c => (
               <div key={c.title} style={card}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--sp-s)', marginBottom: 'var(--sp-xs)' }}>
                   <span style={{ fontSize: '1.4rem' }} aria-hidden>{c.icon}</span>
                   <div>
                     <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--ink)' }}>{c.title}</div>
