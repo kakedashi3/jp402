@@ -95,6 +95,25 @@ h1 .hl { background: linear-gradient(180deg, transparent 62%, rgba(255,226,122,.
 .btn.outline { background: var(--card); color: var(--accent); border: 1px solid var(--line); }
 .btn.outline:hover { border-color: var(--accent); background: #f7f5ff; text-decoration: none; }
 
+/* hero terminal（発見の入口を1行で見せるダークなターミナル風ブロック） */
+.heroterm { max-width: 560px; margin: var(--sp-xl) auto 0; border-radius: 12px; overflow: hidden;
+  background: rgba(10, 6, 28, .55); border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 18px 40px -18px rgba(0,0,0,.55); backdrop-filter: blur(6px); text-align: left; }
+.heroterm-bar { display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  background: rgba(255,255,255,.06); border-bottom: 1px solid rgba(255,255,255,.12); }
+.heroterm-dots { display: inline-flex; gap: 6px; }
+.heroterm-dots i { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.28); }
+.heroterm-dots i:nth-child(1) { background: #ff5f57; }
+.heroterm-dots i:nth-child(2) { background: #febc2e; }
+.heroterm-dots i:nth-child(3) { background: #28c840; }
+.heroterm-title { flex: 1; font-size: .76rem; color: rgba(255,255,255,.62); letter-spacing: .02em; }
+.heroterm-copy { border: 1px solid rgba(255,255,255,.32); color: #fff; background: rgba(255,255,255,.08);
+  border-radius: 7px; padding: 5px 11px; font-size: .76rem; font-weight: 700; cursor: pointer; transition: .15s; }
+.heroterm-copy:hover { background: rgba(255,255,255,.2); }
+.heroterm-body { margin: 0; padding: 16px; font-size: .9rem; line-height: 1.6; color: #f4f1ff;
+  white-space: pre-wrap; overflow-wrap: anywhere; }
+.heroterm-prompt { color: #ffe27a; user-select: none; }
+
 /* copy block（プロンプトのコピペUI） */
 .copyblock { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); box-shadow: var(--sh-1); }
 .copyhead { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #faf9ff; border-bottom: 1px solid var(--line); }
