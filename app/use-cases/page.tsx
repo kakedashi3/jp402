@@ -5,7 +5,7 @@ import { Logo } from '@/app/_components/Logo';
 export const metadata: Metadata = {
   title: 'API で何を売るのか — マイクロペイメントのユースケース',
   description:
-    'API でマイクロペイメントをやりたいけれど、何をどう売ればいいか分からない人のためのページ。x402 / JPYC で「1 回いくら」で売られている実在サービスを、調査・生成・データ・インフラなどのカテゴリーに分けて紹介します。自分の持ち物が API で売れる形を見つけられます。',
+    'API でマイクロペイメントをやりたいけれど、何をどう売ればいいか分からない人のためのページ。x402 / MPP で「1 回いくら」で公開されている実在サービス（決済は USDC が中心）を、調査・生成・データ・インフラなどのカテゴリーに分けて紹介します。自分の持ち物が API で売れる形を見つけられます。',
 };
 
 const REGISTRY_REPO = 'https://github.com/kakedashi3/jp402-registry';
@@ -14,8 +14,9 @@ const REGISTER_URL = 'https://registry.jp402.com/';
 // ---------------------------------------------------------------------------
 // カテゴリー定義
 // examples の name/desc/price は x402 / MPP エコシステム（mpp.dev・x402scan）の
-// 実在サービスから引用。価格は出典どおり USD 建て（Base/USDC が中心）。
-// jp402 はこの市場を JPYC（Polygon）・円建てに持ち込むレイヤー。
+// 実在サービスから引用。これらは USDC 建てで公開されているもので（Base/Tempo 等）、
+// JPYC 建てではない。jp402 はこの成立済みモデルを JPYC（Polygon）・円建てに広げる。
+// 例外的に JPYC 建ての実例 = AI×Web3週報アーカイブ / mameta EC。
 // ---------------------------------------------------------------------------
 type Example = { name: string; desc: string; price: string };
 type Category = {
@@ -176,8 +177,9 @@ export default function UseCasesPage() {
           <h1>API で、何を売るのか</h1>
           <p className="lede">
             「API でマイクロペイメントをやってみたい。でも、<strong>何をどう売ればいいのか分からない</strong>」
-            ── そんな人のためのページです。すでに <strong>x402 / JPYC で「1 回いくら」で売られている実在サービス</strong>を
-            カテゴリー別に並べました。眺めているうちに、<strong>あなたの持ち物が「売れる API」になる形</strong>が見えてきます。
+            ── そんな人のためのページです。すでに <strong>x402 / MPP で「1 回いくら」で公開されている実在サービス</strong>
+            （決済は <strong>USDC</strong> が中心）をカテゴリー別に並べました。眺めているうちに、
+            <strong>あなたの持ち物が「売れる API」になる形</strong>が見えてきます。
           </p>
         </div>
       </header>
@@ -235,8 +237,27 @@ export default function UseCasesPage() {
         <section>
           <h2>ユースケース・カタログ</h2>
           <p>
-            実在する x402 / JPYC サービスを、売っている “結果” の種類でカテゴリー分けしました。
+            実在する x402 / MPP サービスを、売っている “結果” の種類でカテゴリー分けしました。
             <strong>各カードは「こういうものを持っているなら、こう売れる」</strong>の見本です。
+          </p>
+          <p
+            className="md"
+            style={{
+              background: 'var(--bg)',
+              border: '1px solid var(--line)',
+              borderLeft: '3px solid var(--accent)',
+              borderRadius: 8,
+              padding: '12px 16px',
+              fontSize: '.88rem',
+              color: 'var(--fg)',
+              margin: '0 0 var(--sp-l)',
+            }}
+          >
+            ⚠️ ここで挙げる例は、<strong>USDC で x402 / MPP 公開されているサービス</strong>です
+            （多くは Base / Tempo、価格も USD 建て）。<strong>JPYC で売られているわけではありません。</strong>
+            jp402 は、この成立済みのモデルを <strong>JPYC（Polygon）・円建て</strong>に広げる試みで、
+            下の <span className="mono">AI×Web3週報</span> や <span className="mono">mameta EC</span> が
+            数少ない JPYC 建ての実例です。
           </p>
           <div style={cardGrid}>
             {CATEGORIES.map(c => (
@@ -280,7 +301,8 @@ export default function UseCasesPage() {
           </div>
           <p className="footnote" style={{ fontSize: '.8rem', color: 'var(--muted)' }}>
             ※ 掲載サービス・価格は x402 / MPP エコシステム（<span className="mono">mpp.dev</span> ・ x402scan）の実在事例から引用。
-            価格は出典どおり USD 建て（Base / USDC が中心）。jp402 は、この市場を
+            これらは <strong>USDC で公開されている</strong>もので（決済レールは Base / Tempo 等、価格は出典どおり USD 建て）、
+            <strong>JPYC 建てではありません</strong>。jp402 は、この成立済みのユースケース群を
             <strong> JPYC（Polygon）・円建て</strong>に持ち込むディスカバリー層です。
           </p>
         </section>
