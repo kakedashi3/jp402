@@ -147,7 +147,7 @@ const MAPPING: { have: string; sell: string }[] = [
 
 const cardGrid: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
   gap: 'var(--sp-m)',
   margin: 'var(--sp-l) 0 var(--sp-xl)',
 };

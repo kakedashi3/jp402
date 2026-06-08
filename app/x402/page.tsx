@@ -109,7 +109,7 @@ export default function X402Page() {
             鍵は、ほとんど使われてこなかった HTTP ステータス
             <code>402 Payment Required</code> です。流れはこうなります。
           </p>
-          <pre className="mono" style={preBox}>{FLOW}</pre>
+          <pre className="mono flowpre" style={preBox}>{FLOW}</pre>
           <ul>
             <li>
               <strong>① 普通に叩く</strong> — 買い手はまず欲しい URL を普通に <code>GET</code> します。

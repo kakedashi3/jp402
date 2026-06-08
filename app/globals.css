@@ -49,8 +49,11 @@ body {
   line-height: 1.95;
   letter-spacing: .02em;
   /* §3.6 禁則 + 折り返し */
-  word-break: keep-all;     /* CJK の語中改行を防ぐ（「掲載台帳」が 掲|載 で割れない） */
-  line-break: strict;
+  /* keep-all は CJK の改行を完全に禁止し、あふれた時だけ任意位置で割れて不自然な改行になる。
+     本文は自然な日本語改行（normal）を基本に、対応ブラウザでは文節単位の auto-phrase を使う。 */
+  word-break: normal;
+  word-break: auto-phrase;  /* Chrome/Edge は文節（文の意味の切れ目）で改行 */
+  line-break: strict;       /* 句読点・閉じ括弧などの禁則処理 */
   overflow-wrap: anywhere;  /* 長い英単語/URL はあふれる時だけ折り返す */
   /* §3.7 和欧混植のカーニング（本文は palt を当てない） */
   font-feature-settings: 'kern' 1;
@@ -85,9 +88,10 @@ a.logo:hover { text-decoration: none; }
 .eyebrow { display: inline-block; font-size: .76rem; letter-spacing: .14em; text-transform: uppercase;
   font-feature-settings: 'palt' 1;
   background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); padding: 5px 12px; border-radius: 999px; margin: var(--sp-xl) 0 var(--sp-l); }
-/* §3.4 Display: 見出しは行間を詰め palt + keep-all（語の途中で折らない） */
+/* §3.4 Display: 見出しは行間を詰め palt。改行は文節単位（auto-phrase）、
+   狭い画面でもあふれないよう keep-all は使わない（手動の <br> で主たる改行は確保）。 */
 h1 { font-size: clamp(1.8rem, 5vw, 2.9rem); line-height: 1.3; letter-spacing: 0; margin: 0 0 var(--sp-l); font-weight: 850;
-  font-feature-settings: 'palt' 1; word-break: keep-all; }
+  font-feature-settings: 'palt' 1; word-break: auto-phrase; }
 h1 .hl { background: linear-gradient(180deg, transparent 62%, rgba(255,226,122,.55) 62%);
   -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .06em; }
 .lede { font-size: clamp(1rem, 2.3vw, 1.12rem); line-height: 1.9; max-width: 620px; color: rgba(255,255,255,.94); margin: 0 0 28px; }
@@ -180,7 +184,9 @@ h2 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.4; letter-spacing: 
 
 @media (max-width: 640px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
-  .chartrow { justify-content: center; }
+  .chartrow { justify-content: center; padding: var(--sp-l); gap: var(--sp-l); }
+  /* x402 のASCIIフロー図はモバイルでは縮小して全体を視認しやすく */
+  .flowpre { font-size: .6rem; line-height: 1.5; }
   /* モバイル: ロゴを上段に、タブは画面端まで届く横スクロールバーに */
   .nav { flex-wrap: wrap; gap: 4px; }
   .nav > div { order: 2; width: 100%; gap: 0;
