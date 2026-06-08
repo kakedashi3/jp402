@@ -72,11 +72,16 @@ code { background: rgba(108,92,231,.08); border-radius: 6px; padding: 1px 6px; f
 .hero.slim h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); margin-bottom: 12px; }
 a.logo:hover { text-decoration: none; }
 .hero .in { max-width: 960px; margin: 0 auto; padding: 18px var(--sp-l) var(--sp-xxl); }
-.nav { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-m) 0; }
-.logo { font-weight: 800; font-size: 1.05rem; color: #fff; display: inline-flex; align-items: center; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: var(--sp-m) 0; }
+.logo { font-weight: 800; font-size: 1.05rem; color: #fff; display: inline-flex; align-items: center; flex: none; }
 .logo .dot { color: #ffe27a; }
 .logo-svg { height: 30px; width: auto; display: block; }
-.nav a { color: #fff; opacity: .92; margin-left: 18px; font-size: .9rem; }
+/* アンダーラインタブ: 既定は透明な下線、hover/focus/現在地で点灯 */
+.nav > div { display: flex; align-items: center; gap: 2px; }
+.nav > div a { color: #fff; opacity: .8; margin: 0; font-size: .9rem; font-weight: 600; line-height: 1;
+  padding: 9px 12px; border-bottom: 2px solid transparent; white-space: nowrap; transition: opacity .15s, border-color .15s; }
+.nav > div a:hover, .nav > div a:focus-visible { opacity: 1; border-bottom-color: rgba(255,255,255,.9); text-decoration: none; }
+.nav > div a[aria-current="page"] { opacity: 1; border-bottom-color: #ffe27a; }
 .eyebrow { display: inline-block; font-size: .76rem; letter-spacing: .14em; text-transform: uppercase;
   font-feature-settings: 'palt' 1;
   background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); padding: 5px 12px; border-radius: 999px; margin: var(--sp-xl) 0 var(--sp-l); }
@@ -171,6 +176,15 @@ h2 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); line-height: 1.4; letter-spacing: 
 @media (max-width: 640px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
   .chartrow { justify-content: center; }
+  /* モバイル: ロゴを上段に、タブは画面端まで届く横スクロールバーに */
+  .nav { flex-wrap: wrap; gap: 4px; }
+  .nav > div { order: 2; width: 100%; gap: 0;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    margin: 4px calc(-1 * var(--sp-l)) 0; padding: 0 var(--sp-l);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--sp-l), #000 calc(100% - var(--sp-l)), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 var(--sp-l), #000 calc(100% - var(--sp-l)), transparent 100%); }
+  .nav > div::-webkit-scrollbar { display: none; }
+  .nav > div a { padding: 9px 11px; }
 }
 
 /* FAQ */
