@@ -56,6 +56,7 @@ export default function X402Page() {
             <Logo />
             <div>
               <a href="/">ホーム</a>
+              <a href="/use-cases">ユースケース</a>
               <a href="/faq">FAQ</a>
               <a href={REGISTRY_REPO} target="_blank" rel="noopener">GitHub</a>
             </div>
