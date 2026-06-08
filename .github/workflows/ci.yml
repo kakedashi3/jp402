@@ -1,0 +1,24 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      # 型チェック（env 非依存）。next build の TS フェーズ相当。
+      - run: pnpm run typecheck
+      # オフラインのユニットテストのみ（定数固定 + snapshot↔lib drift 検知）。
+      # 注: npm test のライブ契約テストは本番(jp402.com)を叩くため CI には入れない。
+      - run: pnpm run test:unit
