@@ -127,6 +127,14 @@ h1 .hl { background: linear-gradient(180deg, transparent 62%, rgba(255,226,122,.
 .copypre { margin: 0; padding: 16px; font-size: .82rem; line-height: 1.7; color: var(--fg);
   white-space: pre-wrap; overflow-wrap: anywhere; background: var(--card); }
 
+/* dark variant（ターミナル調のコードブロック。ヒーローの配色と統一） */
+.copyblock-dark { border-color: rgba(10,6,28,.18); background: #15102e; }
+.copyblock-dark .copyhead { background: rgba(255,255,255,.05); border-bottom-color: rgba(255,255,255,.1); }
+.copyblock-dark .copylabel { color: rgba(255,255,255,.66); }
+.copyblock-dark .copybtn { border-color: rgba(255,255,255,.32); color: #fff; background: rgba(255,255,255,.08); }
+.copyblock-dark .copybtn:hover { background: rgba(255,255,255,.2); }
+.copyblock-dark .copypre { background: transparent; color: #ece9fb; }
+
 /* sections */
 section { padding: clamp(48px, 7vw, 76px) 0; }
 .kicker { color: var(--accent); font-weight: 700; font-size: .85rem; letter-spacing: .08em; margin: 0 0 var(--sp-s); }

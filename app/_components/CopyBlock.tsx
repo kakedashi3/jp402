@@ -3,7 +3,16 @@
 import { useState } from 'react';
 
 // コピペ用のコードブロック + コピーボタン（買い手がエージェントに貼り付ける）。
-export function CopyBlock({ text, label = 'プロンプト' }: { text: string; label?: string }) {
+// tone='dark' でターミナル調のダークなコードブロックになる（ヒーローの配色と統一）。
+export function CopyBlock({
+  text,
+  label = 'プロンプト',
+  tone = 'light',
+}: {
+  text: string;
+  label?: string;
+  tone?: 'light' | 'dark';
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -17,7 +26,7 @@ export function CopyBlock({ text, label = 'プロンプト' }: { text: string; l
   }
 
   return (
-    <div className="copyblock">
+    <div className={tone === 'dark' ? 'copyblock copyblock-dark' : 'copyblock'}>
       <div className="copyhead">
         <span className="copylabel">{label}</span>
         <button type="button" className="copybtn" onClick={copy} aria-label={`${label}をコピー`}>
