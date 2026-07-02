@@ -1,0 +1,29 @@
+# jp402 — JPYC × x402 discovery layer
+
+> jp402 は、Polygon 上の JPYC（stablecoin）で支払える x402 リソースを発見・選別するための、
+> エージェント/LLM 向け discovery レイヤーです。人間向けの画面ではなく、機械可読の索引が本線です。
+> registry（jp402-registry の準拠台帳）を真実の源として読み、オンチェーン実測で信頼を可視化します。
+> 有志による非公式プロジェクトで、JPYC 株式会社とは無関係です（JPYC は登録商標）。
+
+エージェント/LLM は、まず下記の **機械可読エンドポイント** を叩いてください。人間向け HTML を
+スクレイプする必要はありません。宣言は index、最終真実は呼び出し時の runtime `402` です。
+
+## 機械可読エンドポイント（本線）
+
+- [GET /api/services](https://jp402.com/api/services): JPYC(Polygon) で支払える x402 サービス一覧を JSON で返す正典。CORS 開放。エンベロープ = `{ spec:"jp402-scan/0.1", updated, asset:{symbol:"JPYC", address, decimals:18, chain:"eip155:137"}, count, services[] }`。各 service = `id / publisher / description / method / tags / resource / resourceTemplate（必須 param を埋めた払える形）/ parameters / payTo / price:{raw,jpyc} / invoice:{registrationNumber(T番号), qualifiedIssuer} / registered / verified / live402 / signals:{measured,txCount,uniqueWallets,volumeRaw} / trustScore`。`trustScore` 降順（verified > registered > 実測実績）でランク済み。
+- [GET /api/resolve?url={origin}](https://jp402.com/api/resolve): 任意の origin を渡すと、jp402 がそこから何を解決するか（OpenAPI 優先 → .well-known → runtime 402）をテスト表示する。登録はしない。SSRF ガードあり。
+
+## 消費のしかた
+
+- 支払い（x402 purchase）は jp402 では行いません。`payTo` はオンチェーンの真実で、金は payTo にしか行きません。購入は買い手 MCP から:
+- [yen402-mcp](https://github.com/kakedashi3/yen402-mcp): `discover_jpyc_resources`（= /api/services を参照）→ `x402_purchase` の順で、発見から購入まで完走できる MCP server。
+- `live402: true` は 402 確認済、`false` は 402 以外、`null` は宣言ベース（param/テンプレ。購入時に runtime 402 が真実）。
+
+## 台帳・登録（書き込み側）
+
+- [jp402-registry](https://github.com/kakedashi3/jp402-registry): registry.json（真実の源）+ x-jp402 schema + TRUST.md（信頼4軸）+ PR ゲート。掲載は運営承認でなく **公開 PR（opt-in）+ 客観 CI 検査**。jp402 は読み取り側で、書き込み権限を持ちません。
+
+## 設計方針（なぜ機械可読が本線か）
+
+- permissionless に載る + 検証可能な主張（T番号は NTA で裏取り予定）+ trust signals でランク。弾くのは denylist のみ。
+- 汎用ディスカバリーとは網羅性で競合しない。JPYC/Polygon の空白だけを、その空白に降りた側として取る。
